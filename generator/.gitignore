@@ -11,4 +11,6 @@ __pycache__
 # ignore output unicode art files
 small
 large
+tiny
+images
 pokemon.json

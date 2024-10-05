@@ -97,3 +97,49 @@ class LargeConverter:
         unicode_sprite += reset_code
 
         return unicode_sprite
+
+
+class TinyConverter:
+    """Generates sprites where four image pixels are mapped to one unicode character"""
+
+    def convert_image_to_unicode(self, image: Image) -> str:
+        solid_block = "█"
+        empty_block = " "
+        unicode_sprite = ""
+
+        image_array = np.array(image)
+        height, width, channels = image_array.shape
+
+        # Ensure width and height are even
+        if height % 2:
+            padded_array = np.zeros((height + 1, width, channels)).astype(np.uint8)
+            padded_array[:height, :, :] = image_array
+            height, width, channels = padded_array.shape
+            image_array = padded_array
+
+        if width % 2:
+            padded_array = np.zeros((height, width + 1, channels)).astype(np.uint8)
+            padded_array[:, :width, :] = image_array
+            height, width, channels = padded_array.shape
+            image_array = padded_array
+
+        reset_code = ansi.get_reset_escape_code()
+        for i in range(0, height, 2):
+            for j in range(0, width, 2):
+                pixels = [
+                    image_array[i, j],
+                    image_array[i, j + 1],
+                    image_array[i + 1, j],
+                    image_array[i + 1, j + 1]
+                ]
+                if all(pixel[3] == 0 for pixel in pixels):
+                    unicode_sprite += empty_block
+                else:
+                    avg_color = np.mean([pixel[:3] for pixel in pixels if pixel[3] != 0], axis=0).astype(int)
+                    r, g, b = avg_color
+                    escape_code = ansi.get_color_escape_code(r, g, b)
+                    unicode_sprite += escape_code + solid_block + reset_code
+            unicode_sprite += "\n"
+        unicode_sprite += reset_code
+
+        return unicode_sprite

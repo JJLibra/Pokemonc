@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 from typing import List
+from PIL import Image
 
 import unicode_converter as converter
 from image import PokemonImage
@@ -34,6 +35,8 @@ async def main() -> None:
             color_dir = "shiny" if sprite.is_shiny else "regular"
             write_to_file(sprite.name, f"large/{color_dir}", large_unicode_sprite)
             write_to_file(sprite.name, f"small/{color_dir}", small_unicode_sprite)
+
+            save_image(image.image, sprite.name, 'images')
 
             if not args.silent:
                 print(sprite.name)
@@ -69,6 +72,10 @@ def write_to_file(filename: str, directory: str, text: str) -> None:
     os.makedirs(directory, exist_ok=True)
     with open(f"{directory}/{filename}", "w+", encoding='utf-8') as fout:
         fout.write(text)
+
+def save_image(image: Image.Image, filename: str, directory: str) -> None:
+    os.makedirs(directory, exist_ok=True)
+    image.save(os.path.join(directory, f"{filename}.png"))
 
 if __name__ == "__main__":
     asyncio.run(main())
