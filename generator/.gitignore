@@ -1,0 +1,13 @@
+# ignore virtual env
+.venv
+
+# ignore mypy files
+.mypy_cache
+
+# ignore compiled files
+*.pyc
+__pycache__
+
+# ignore output unicode art files
+small
+large
