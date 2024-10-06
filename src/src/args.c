@@ -58,6 +58,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 1003:
             arguments->no_gmax = 1;
             break;
+        case 1004:
+            arguments->no_regional = 1;
+            break;
         case 'v':
             printf("pokemonc %s\n", arguments->version);
             exit(0);
@@ -103,6 +106,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"no-title", 1001, 0, 0, "Do not display pokemon name"},
         {"no-mega", 1002, 0, 0, "Do not show mega pokemon"},
         {"no-gmax", 1003, 0, 0, "Do not show gigantamax pokemon"},
+        {"no-regional", 1004, 0, 0, "Do not show regional pokemon"},  // 添加 --no-regional 选项
         {0}
     };
 
