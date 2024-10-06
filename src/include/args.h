@@ -10,6 +10,7 @@ struct arguments {
     int no_title;
     int no_mega;
     int no_gmax;
+    int no_regional;
     const char *version;
 };
 

@@ -51,12 +51,12 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
         form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
     } while ((no_mega && (strstr(form, "mega") != NULL || strstr(form, "mega-X") != NULL || strstr(form, "mega-Y") != NULL)) || 
              (no_gmax && strstr(form, "gmax") != NULL) || 
-             (no_regional && (strstr(form, "alola") != NULL || strstr(form, "galar") != NULL || strstr(form, "hisui") != NULL || strstr(form, "paldea") != NULL)););
+             (no_regional && (strstr(form, "alola") != NULL || strstr(form, "galar") != NULL || strstr(form, "hisui") != NULL || strstr(form, "paldea") != NULL)));
 
     const char *name = pokemon_list[index].name;
 
     if (!no_title) {
-        printf("%s\n", name);
+        printf("%s (%s)\n", name, form);
     }
     
     display_pokemon(pokemon_list, count, name, form, shiny);
