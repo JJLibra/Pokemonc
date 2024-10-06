@@ -49,14 +49,17 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 'r':
             arguments->random = 1;
             break;
-        case 's':
-            arguments->shiny = 1;
+        case 1001:  // 自定义选项的 key，用于 --no-title
+            arguments->no_title = 1;
             break;
         case 'v':
             printf("pokemonc %s\n", arguments->version);
             exit(0);
         case ARGP_KEY_ARG:
-            if (state->arg_num == 0) {
+            if (arguments->random) {
+                // 处理随机子命令的参数（如世代）
+                // 可以在此处添加更多逻辑
+            } else if (state->arg_num == 0) {
                 arguments->pokemon_name = arg;
             } else if (state->arg_num == 1) {
                 arguments->form = arg;
@@ -71,16 +74,13 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 void parse_arguments(int argc, char **argv, struct arguments *arguments) {
-    // Handle `--help random` before invoking `argp_parse`
-    if (argc > 2 && strcmp(argv[1], "--help") == 0 && strcmp(argv[2], "random") == 0) {
-        print_random_help();
-        exit(0);
-    }
-
     // Handle `random --help` case
-    if (argc > 1 && strcmp(argv[1], "random") == 0 && (argc == 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0))) {
-        print_random_help();
-        exit(0);
+    if (argc > 1 && strcmp(argv[1], "random") == 0) {
+        arguments->random = 1;  // 确保设置了随机标志
+        if (argc == 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
+            print_random_help();
+            exit(0);
+        }
     }
 
     // Handle general `--help`
@@ -94,7 +94,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"random", 'r', 0, 0, "显示随机宝可梦"},
         {"shiny", 's', 0, 0, "显示闪光版宝可梦"},
         {"version", 'v', 0, 0, "显示版本信息"},
-        {"help", 'h', 0, 0, "显示帮助信息"},
+        {"no-title", 1001, 0, 0, "Do not display pokemon name"},  // 添加 --no-title 选项
         {0}
     };
 

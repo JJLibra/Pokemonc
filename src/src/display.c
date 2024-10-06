@@ -42,10 +42,15 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
     printf("未找到宝可梦 %s。\n", name);
 }
 
-void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny) {
+void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title) {
     int index = rand() % count;
     const char *name = pokemon_list[index].name;
     const char *form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
-    printf("显示随机宝可梦: %s (%s)\n", name, form);
+
+    // 根据 no_title 参数决定是否显示宝可梦的名称
+    if (!no_title) {
+        printf("显示随机宝可梦: %s (%s)\n", name, form);
+    }
+    
     display_pokemon(pokemon_list, count, name, form, shiny);
 }

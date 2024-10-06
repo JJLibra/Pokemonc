@@ -7,6 +7,7 @@ struct arguments {
     int list;
     int random;
     int shiny;
+    int no_title;
     const char *version;
 };
 
