@@ -26,10 +26,10 @@ void print_usage(Config *config) {
     printf(COLOR_GREEN "    -V, --version" COLOR_RESET "    Print version information\n\n");
     
     printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
-    printf(COLOR_GREEN "    help" COLOR_RESET "      Print this message or the help of the given subcommand(s)\n");
-    printf(COLOR_GREEN "    list" COLOR_RESET "      Print list of all pokemon\n");
-    printf(COLOR_GREEN "    name" COLOR_RESET "      Select pokemon by name. Generally spelled like in the games.\n");
-    printf(COLOR_GREEN "    random" COLOR_RESET "    Show a random pokemon.\n\n");
+    printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
+    printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all pokemon\n");
+    printf(COLOR_GREEN "    name" COLOR_RESET "             Select pokemon by name. Generally spelled like in the games.\n");
+    printf(COLOR_GREEN "    random" COLOR_RESET "           Show a random pokemon.\n\n");
 }
 
 int main(int argc, char **argv) {
