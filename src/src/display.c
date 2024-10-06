@@ -42,10 +42,16 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
     printf("Pokémon %s not found.\n", name);
 }
 
-void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title) {
-    int index = rand() % count;
+void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega) {
+    int index;
+    const char *form;
+
+    do {
+        index = rand() % count;
+        form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
+    } while (no_mega && strstr(form, "Mega") != NULL);
+
     const char *name = pokemon_list[index].name;
-    const char *form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
 
     if (!no_title) {
         printf("%s\n", name);

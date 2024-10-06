@@ -8,6 +8,7 @@ struct arguments {
     int random;
     int shiny;
     int no_title;
+    int no_mega;
     const char *version;
 };
 

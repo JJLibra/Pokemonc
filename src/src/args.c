@@ -52,6 +52,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 1001:
             arguments->no_title = 1;
             break;
+        case 1002:
+            arguments->no_mega = 1;
+            break;
         case 'v':
             printf("pokemonc %s\n", arguments->version);
             exit(0);
@@ -94,7 +97,8 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"random", 'r', 0, 0, "显示随机宝可梦"},
         {"shiny", 's', 0, 0, "显示闪光版宝可梦"},
         {"version", 'v', 0, 0, "显示版本信息"},
-        {"no-title", 1001, 0, 0, "Do not display pokemon name"},  // 添加 --no-title 选项
+        {"no-title", 1001, 0, 0, "Do not display pokemon name"},
+        {"no-mega", 1002, 0, 0, "Do not show mega pokemon"},
         {0}
     };
 

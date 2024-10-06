@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, config->version};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, config->version};
     if (argc == 1) {
         print_usage(config);
         free_config(config);
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     if (arguments.list) {
         list_all_pokemon(pokemon_list, pokemon_count);
     } else if (arguments.random) {
-        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny, arguments.no_title);
+        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny, arguments.no_title, arguments.no_mega);
     } else if (arguments.pokemon_name) {
         display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {
