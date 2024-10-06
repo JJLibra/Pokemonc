@@ -3,4 +3,7 @@ hello.c
 hello
 cJSON
 src/pokemon_display
+src/pokemonc
 *.o
+pokemon_display
+pokemonc
