@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, config->version};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, config->version};
     if (argc == 1) {
         print_usage(config);
         free_config(config);
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     srand(tv.tv_sec * 1000000 + tv.tv_usec);
 
     int pokemon_count;
-    Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count);
+    Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count, "en");
     if (!pokemon_list) {
         free_config(config);
         return 1;
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     if (arguments.list) {
         list_all_pokemon(pokemon_list, pokemon_count);
     } else if (arguments.random) {
-        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional);
+        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info);
     } else if (arguments.pokemon_name) {
         display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {

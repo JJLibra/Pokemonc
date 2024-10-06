@@ -7,7 +7,7 @@
 Config *load_config(const char *file_path) {
     FILE *file = fopen(file_path, "r");
     if (!file) {
-        perror("无法打开配置文件");
+        perror("Unable to open profile.");
         return NULL;
     }
 
@@ -23,13 +23,13 @@ Config *load_config(const char *file_path) {
     cJSON *json = cJSON_Parse(json_data);
     free(json_data);
     if (!json) {
-        printf("解析配置文件错误: %s\n", cJSON_GetErrorPtr());
+        printf("Parsing profile error: %s\n", cJSON_GetErrorPtr());
         return NULL;
     }
 
     Config *config = (Config *)malloc(sizeof(Config));
     if (!config) {
-        printf("内存分配失败。\n");
+        printf("Memory allocation failed.\n");
         cJSON_Delete(json);
         return NULL;
     }
@@ -46,6 +46,9 @@ Config *load_config(const char *file_path) {
     cJSON *description_item = cJSON_GetObjectItem(json, "description");
     config->description = description_item && cJSON_IsString(description_item) ? strdup(description_item->valuestring) : strdup("No description provided.");
 
+    cJSON *language_item = cJSON_GetObjectItem(json, "language");
+    config->language = language_item && cJSON_IsString(language_item) ? strdup(language_item->valuestring) : strdup("en");
+
     cJSON_Delete(json);
     return config;
 }
@@ -56,6 +59,7 @@ void free_config(Config *config) {
         free(config->author);
         free(config->email);
         free(config->description);
+        free(config->language);
         free(config);
     }
 }

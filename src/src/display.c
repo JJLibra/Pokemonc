@@ -42,7 +42,7 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
     printf("Pokémon %s not found.\n", name);
 }
 
-void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional) {
+void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional, int info) {
     int index;
     const char *form;
 
@@ -58,6 +58,10 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
     if (!no_title) {
         printf("%s (%s)\n", name, form);
     }
-    
+
     display_pokemon(pokemon_list, count, name, form, shiny);
+
+    if (info && pokemon_list[index].desc) {
+        printf("\nDescription: %s\n", pokemon_list[index].desc);
+    }
 }

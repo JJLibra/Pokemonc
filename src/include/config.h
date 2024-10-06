@@ -6,6 +6,7 @@ typedef struct {
     char *author;
     char *email;
     char *description;
+    char *language;
 } Config;
 
 Config *load_config(const char *file_path);

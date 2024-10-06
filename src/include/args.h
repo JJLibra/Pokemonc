@@ -11,6 +11,7 @@ struct arguments {
     int no_mega;
     int no_gmax;
     int no_regional;
+    int info;
     const char *version;
 };
 
