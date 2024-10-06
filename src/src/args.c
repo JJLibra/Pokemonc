@@ -7,10 +7,39 @@
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
-#define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
 
-// 命令行参数结构体
+void print_random_help() {
+    printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
+    printf("    pokemonc random [OPTIONS] [GENERATIONS]\n\n");
+
+    printf(COLOR_YELLOW "ARGS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    <GENERATIONS>" COLOR_RESET "    Generation number, range (1-8), or list of generations (1,3,6) [default: 1-8]\n\n");
+
+    printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    -h, --help" COLOR_RESET "           Print help information\n");
+    printf(COLOR_GREEN "    -i, --info" COLOR_RESET "           Print pokedex entry (if it exists)\n");
+    printf(COLOR_GREEN "        --no-gmax" COLOR_RESET "        Do not show gigantamax pokemon\n");
+    printf(COLOR_GREEN "        --no-mega" COLOR_RESET "        Do not show mega pokemon\n");
+    printf(COLOR_GREEN "        --no-regional" COLOR_RESET "    Do not show regional pokemon\n");
+    printf(COLOR_GREEN "        --no-title" COLOR_RESET "       Do not display pokemon name\n");
+}
+
+void print_general_help() {
+    printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
+    printf("    pokemonc <SUBCOMMAND>\n\n");
+
+    printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    -h, --help" COLOR_RESET "       Print help information\n");
+    printf(COLOR_GREEN "    -v, --version" COLOR_RESET "    Print version information\n\n");
+
+    printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
+    printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all pokemon\n");
+    printf(COLOR_GREEN "    name" COLOR_RESET "             Select pokemon by name. Generally spelled like in the games.\n");
+    printf(COLOR_GREEN "    random" COLOR_RESET "           Show a random pokemon.\n\n");
+}
+
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
     switch (key) {
@@ -25,22 +54,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'v':
             printf("pokemonc %s\n", arguments->version);
-            exit(0);
-            break;
-        case 'h':
-        case ARGP_KEY_END:
-            printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
-            printf("    pokemonc <SUBCOMMAND>\n\n");
-            
-            printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
-            printf(COLOR_GREEN "    -h, --help" COLOR_RESET "       Print help information\n");
-            printf(COLOR_GREEN "    -v, --version" COLOR_RESET "    Print version information\n\n");
-            
-            printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
-            printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
-            printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all pokemon\n");
-            printf(COLOR_GREEN "    name" COLOR_RESET "             Select pokemon by name. Generally spelled like in the games.\n");
-            printf(COLOR_GREEN "    random" COLOR_RESET "           Show a random pokemon.\n\n");
             exit(0);
         case ARGP_KEY_ARG:
             if (state->arg_num == 0) {
@@ -58,6 +71,24 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 void parse_arguments(int argc, char **argv, struct arguments *arguments) {
+    // Handle `--help random` before invoking `argp_parse`
+    if (argc > 2 && strcmp(argv[1], "--help") == 0 && strcmp(argv[2], "random") == 0) {
+        print_random_help();
+        exit(0);
+    }
+
+    // Handle `random --help` case
+    if (argc > 1 && strcmp(argv[1], "random") == 0 && (argc == 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0))) {
+        print_random_help();
+        exit(0);
+    }
+
+    // Handle general `--help`
+    if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)) {
+        print_general_help();
+        exit(0);
+    }
+
     static struct argp_option options[] = {
         {"list", 'l', 0, 0, "列出所有宝可梦"},
         {"random", 'r', 0, 0, "显示随机宝可梦"},
