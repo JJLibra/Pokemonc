@@ -62,6 +62,6 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
     display_pokemon(pokemon_list, count, name, form, shiny);
 
     if (info && pokemon_list[index].desc) {
-        printf("\nDescription: %s\n", pokemon_list[index].desc);
+        printf("\n%s\n", pokemon_list[index].desc);
     }
 }

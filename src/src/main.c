@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     srand(tv.tv_sec * 1000000 + tv.tv_usec);
 
     int pokemon_count;
-    Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count, "en");
+    Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count, config->language);
     if (!pokemon_list) {
         free_config(config);
         return 1;

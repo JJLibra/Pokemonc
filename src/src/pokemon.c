@@ -74,7 +74,7 @@ Pokemon *load_pokemon_data(const char *file_path, int *count, const char *langua
             if (desc_item && cJSON_IsString(desc_item)) {
                 pokemon_list[i].desc = strdup(desc_item->valuestring);
             } else {
-                pokemon_list[i].desc = NULL;  // 说明未找到描述信息，不再输出错误
+                pokemon_list[i].desc = NULL;
             }
         } else {
             pokemon_list[i].desc = NULL;
