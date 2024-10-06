@@ -129,7 +129,8 @@ void list_all_pokemon(Pokemon *pokemon_list, int count) {
 // 显示特定宝可梦及其形态
 void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
     for (int i = 0; i < count; i++) {
-        if (pokemon_list[i].name && strcmp(pokemon_list[i].name, name) == 0) {
+        // 使用 slug 而不是名称进行匹配
+        if (pokemon_list[i].slug && strcmp(pokemon_list[i].slug, name) == 0) {
             // 使用 slug 构建宝可梦艺术文件的路径
             char art_path[256];
             if (strcmp(form, "regular") == 0) {
