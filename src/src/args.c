@@ -7,9 +7,11 @@
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
+#define COLOR_BOLD_PINK "\033[1;35m"
 #define COLOR_RESET "\033[0m"
 
 void print_random_help() {
+    printf(COLOR_BOLD_PINK "pokemonc random\n" COLOR_RESET);
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
     printf("    pokemonc random [OPTIONS] [GENERATIONS]\n\n");
 
