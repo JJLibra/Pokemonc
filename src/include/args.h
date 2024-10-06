@@ -9,6 +9,7 @@ struct arguments {
     int shiny;
     int no_title;
     int no_mega;
+    int no_gmax;
     const char *version;
 };
 

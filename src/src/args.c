@@ -55,13 +55,16 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 1002:
             arguments->no_mega = 1;
             break;
+        case 1003:
+            arguments->no_gmax = 1;
+            break;
         case 'v':
             printf("pokemonc %s\n", arguments->version);
             exit(0);
         case ARGP_KEY_ARG:
             if (arguments->random) {
-                // 处理随机子命令的参数（如世代）
-                // 可以在此处添加更多逻辑
+                // Handle random subcommand arguments (e.g., generations)
+                // Add additional logic here if needed
             } else if (state->arg_num == 0) {
                 arguments->pokemon_name = arg;
             } else if (state->arg_num == 1) {
@@ -99,6 +102,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"version", 'v', 0, 0, "显示版本信息"},
         {"no-title", 1001, 0, 0, "Do not display pokemon name"},
         {"no-mega", 1002, 0, 0, "Do not show mega pokemon"},
+        {"no-gmax", 1003, 0, 0, "Do not show gigantamax pokemon"},
         {0}
     };
 
