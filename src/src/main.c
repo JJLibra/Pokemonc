@@ -9,13 +9,14 @@
 
 #define CONFIG_FILE_PATH "../config.json"
 
-#define COLOR_YELLOW "\033[33m"
 #define COLOR_GREEN "\033[32m"
+#define COLOR_YELLOW "\033[33m"
+#define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
 
 void print_usage(Config *config) {
     printf(COLOR_GREEN "pokemonc" COLOR_RESET " %s\n", config->version);
-    printf("%s <%s>\n", config->author, config->email);
+    printf(COLOR_BLUE "Author: %s <%s>\n" COLOR_RESET, config->author, config->email);
     printf("%s\n\n", config->description);
 
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
@@ -40,7 +41,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    struct arguments arguments = {NULL, "regular", 0, 0, 0};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0, config->version};
     if (argc == 1) {
         // No arguments provided, print the usage information
         print_usage(config);

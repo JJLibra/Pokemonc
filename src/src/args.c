@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "args.h"
+#include "config.h"
 #include <argp.h>
 
 // 命令行参数结构体
@@ -16,6 +17,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 's':
             arguments->shiny = 1;
+            break;
+        case 'v':
+            printf("pokemonc %s\n", arguments->version);
+            exit(0);
             break;
         case ARGP_KEY_ARG:
             if (state->arg_num == 0) {
@@ -37,6 +42,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"list", 'l', 0, 0, "列出所有宝可梦"},
         {"random", 'r', 0, 0, "显示随机宝可梦"},
         {"shiny", 's', 0, 0, "显示闪光版宝可梦"},
+        {"version", 'v', 0, 0, "显示版本信息"},
         {0}
     };
 

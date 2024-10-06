@@ -7,6 +7,7 @@ struct arguments {
     int list;
     int random;
     int shiny;
+    const char *version;
 };
 
 void parse_arguments(int argc, char **argv, struct arguments *arguments);
