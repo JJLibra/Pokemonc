@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <argp.h>
 #include <sys/time.h>
+#include <argp.h>
 #include "cJSON.h"
 
 #define MAX_FORMS 10
@@ -12,6 +12,7 @@
 // 宝可梦结构体
 typedef struct {
     char *name;
+    char *slug;
     char *forms[MAX_FORMS];
     int form_count;
 } Pokemon;
@@ -79,6 +80,15 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
         }
         pokemon_list[i].name = strdup(name_item->valuestring);
 
+        // 获取 'slug' 字段
+        cJSON *slug_item = cJSON_GetObjectItem(pokemon_json, "slug");
+        if (!slug_item || !cJSON_IsString(slug_item)) {
+            printf("宝可梦 %s 缺少 'slug' 字段或其类型不正确。\n", pokemon_list[i].name);
+            pokemon_list[i].slug = NULL; // 设置为 NULL，防止后续访问
+            continue;
+        }
+        pokemon_list[i].slug = strdup(slug_item->valuestring);
+
         cJSON *forms = cJSON_GetObjectItem(pokemon_json, "forms");
         if (!forms || !cJSON_IsArray(forms)) {
             printf("宝可梦 %s 缺少有效的 'forms' 数组。\n", pokemon_list[i].name);
@@ -120,12 +130,12 @@ void list_all_pokemon(Pokemon *pokemon_list, int count) {
 void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
     for (int i = 0; i < count; i++) {
         if (pokemon_list[i].name && strcmp(pokemon_list[i].name, name) == 0) {
-            // 构建宝可梦艺术文件的路径
+            // 使用 slug 构建宝可梦艺术文件的路径
             char art_path[256];
             if (strcmp(form, "regular") == 0) {
-                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", name);
+                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", pokemon_list[i].slug);
             } else {
-                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", name, form);
+                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", pokemon_list[i].slug, form);
             }
 
             // 打开艺术文件
@@ -255,6 +265,9 @@ int main(int argc, char **argv) {
     for (int i = 0; i < pokemon_count; i++) {
         if (pokemon_list[i].name) {
             free(pokemon_list[i].name);
+        }
+        if (pokemon_list[i].slug) {
+            free(pokemon_list[i].slug);
         }
         for (int j = 0; j < pokemon_list[i].form_count; j++) {
             if (pokemon_list[i].forms[j]) {
