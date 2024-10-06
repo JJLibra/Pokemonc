@@ -24,7 +24,7 @@ void print_usage(Config *config) {
     
     printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    -h, --help" COLOR_RESET "       Print help information\n");
-    printf(COLOR_GREEN "    -V, --version" COLOR_RESET "    Print version information\n\n");
+    printf(COLOR_GREEN "    -v, --version" COLOR_RESET "    Print version information\n\n");
     
     printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
