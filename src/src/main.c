@@ -36,7 +36,7 @@ void print_usage(Config *config) {
 int main(int argc, char **argv) {
     Config *config = load_config(CONFIG_FILE_PATH);
     if (!config) {
-        printf("无法加载配置文件。程序退出。\n");
+        printf("The configuration file could not be loaded. Exited.\n");
         return 1;
     }
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     } else if (arguments.pokemon_name) {
         display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {
-        printf("未指定命令。使用 --help 查看更多信息。\n");
+        printf("No command specified. Use --help to see more information.\n");
     }
 
     free_pokemon_data(pokemon_list, pokemon_count);

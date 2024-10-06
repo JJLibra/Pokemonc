@@ -9,7 +9,7 @@ void list_all_pokemon(Pokemon *pokemon_list, int count) {
         if (pokemon_list[i].name) {
             printf("%s\n", pokemon_list[i].name);
         } else {
-            printf("未找到宝可梦的名称。\n");
+            printf("The name of the Pokémon was not found.\n");
         }
     }
 }
@@ -26,7 +26,7 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
 
             FILE *art_file = fopen(art_path, "r");
             if (!art_file) {
-                printf("无法读取宝可梦 '%s' 的艺术文件。路径: %s\n", name, art_path);
+                printf("Unable to read art file for Pokémon '%s'. Path: %s\n", name, art_path);
                 return;
             }
 
@@ -39,7 +39,7 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
             return;
         }
     }
-    printf("未找到宝可梦 %s。\n", name);
+    printf("Pokémon %s not found.\n", name);
 }
 
 void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title) {
@@ -47,9 +47,8 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
     const char *name = pokemon_list[index].name;
     const char *form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
 
-    // 根据 no_title 参数决定是否显示宝可梦的名称
     if (!no_title) {
-        printf("显示随机宝可梦: %s (%s)\n", name, form);
+        printf("%s\n", name);
     }
     
     display_pokemon(pokemon_list, count, name, form, shiny);

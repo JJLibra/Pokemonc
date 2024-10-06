@@ -49,7 +49,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 'r':
             arguments->random = 1;
             break;
-        case 1001:  // 自定义选项的 key，用于 --no-title
+        case 1001:
             arguments->no_title = 1;
             break;
         case 'v':
@@ -76,7 +76,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 void parse_arguments(int argc, char **argv, struct arguments *arguments) {
     // Handle `random --help` case
     if (argc > 1 && strcmp(argv[1], "random") == 0) {
-        arguments->random = 1;  // 确保设置了随机标志
+        arguments->random = 1;
         if (argc == 3 && (strcmp(argv[2], "--help") == 0 || strcmp(argv[2], "-h") == 0)) {
             print_random_help();
             exit(0);
