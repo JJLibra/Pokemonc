@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <argp.h>
+#include <sys/time.h>
 #include "cJSON.h"
 
 #define MAX_FORMS 10
@@ -39,18 +40,63 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
         return NULL;
     }
 
+    // 检查顶级 JSON 元素类型
+    if (!cJSON_IsArray(json)) {
+        printf("JSON 文件的顶级元素不是数组。\n");
+        cJSON_Delete(json);
+        return NULL;
+    }
+
     int pokemon_count = cJSON_GetArraySize(json);
     Pokemon *pokemon_list = (Pokemon *)malloc(pokemon_count * sizeof(Pokemon));
+    if (!pokemon_list) {
+        printf("内存分配失败。\n");
+        cJSON_Delete(json);
+        return NULL;
+    }
 
     for (int i = 0; i < pokemon_count; i++) {
         cJSON *pokemon_json = cJSON_GetArrayItem(json, i);
-        pokemon_list[i].name = strdup(cJSON_GetObjectItem(pokemon_json, "name")->valuestring);
+        if (!pokemon_json || !cJSON_IsObject(pokemon_json)) {
+            printf("宝可梦 %d 不是一个有效的对象。\n", i);
+            pokemon_list[i].name = NULL; // 设置为 NULL，防止后续访问
+            continue;
+        }
+
+        cJSON *name_object = cJSON_GetObjectItem(pokemon_json, "name");
+        if (!name_object || !cJSON_IsObject(name_object)) {
+            printf("宝可梦 %d 缺少 'name' 对象或其类型不正确。\n", i);
+            pokemon_list[i].name = NULL; // 设置为 NULL，防止后续访问
+            continue;
+        }
+
+        // 从 'name' 对象中获取英文名称
+        cJSON *name_item = cJSON_GetObjectItem(name_object, "en");
+        if (!name_item || !cJSON_IsString(name_item)) {
+            printf("宝可梦 %d 缺少英文名称或其类型不正确。\n", i);
+            pokemon_list[i].name = NULL; // 设置为 NULL，防止后续访问
+            continue;
+        }
+        pokemon_list[i].name = strdup(name_item->valuestring);
 
         cJSON *forms = cJSON_GetObjectItem(pokemon_json, "forms");
+        if (!forms || !cJSON_IsArray(forms)) {
+            printf("宝可梦 %s 缺少有效的 'forms' 数组。\n", pokemon_list[i].name);
+            pokemon_list[i].form_count = 0; // 没有可用的形态
+            continue;
+        }
+
         int form_count = cJSON_GetArraySize(forms);
-        pokemon_list[i].form_count = form_count;
-        for (int j = 0; j < form_count; j++) {
-            pokemon_list[i].forms[j] = strdup(cJSON_GetArrayItem(forms, j)->valuestring);
+        pokemon_list[i].form_count = form_count > MAX_FORMS ? MAX_FORMS : form_count; // 防止超过 MAX_FORMS
+
+        for (int j = 0; j < pokemon_list[i].form_count; j++) {
+            cJSON *form_item = cJSON_GetArrayItem(forms, j);
+            if (form_item && cJSON_IsString(form_item)) {
+                pokemon_list[i].forms[j] = strdup(form_item->valuestring);
+            } else {
+                printf("宝可梦 %s 的形态 %d 无效。\n", pokemon_list[i].name, j);
+                pokemon_list[i].forms[j] = NULL; // 设置为 NULL，防止后续访问
+            }
         }
     }
 
@@ -62,14 +108,18 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
 // 列出所有宝可梦的名称
 void list_all_pokemon(Pokemon *pokemon_list, int count) {
     for (int i = 0; i < count; i++) {
-        printf("%s\n", pokemon_list[i].name);
+        if (pokemon_list[i].name) { // 确保名称指针有效
+            printf("%s\n", pokemon_list[i].name);
+        } else {
+            printf("未找到宝可梦的名称。\n");
+        }
     }
 }
 
 // 显示特定宝可梦及其形态
 void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
     for (int i = 0; i < count; i++) {
-        if (strcmp(pokemon_list[i].name, name) == 0) {
+        if (pokemon_list[i].name && strcmp(pokemon_list[i].name, name) == 0) {
             // 构建宝可梦艺术文件的路径
             char art_path[256];
             if (strcmp(form, "regular") == 0) {
@@ -81,7 +131,7 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
             // 打开艺术文件
             FILE *art_file = fopen(art_path, "r");
             if (!art_file) {
-                printf("无法读取宝可梦 '%s' 的艺术文件。\n", name);
+                printf("无法读取宝可梦 '%s' 的艺术文件。路径: %s\n", name, art_path);
                 return;
             }
 
@@ -100,10 +150,17 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
 
 // 显示随机宝可梦
 void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny) {
-    srand(time(NULL));
     int index = rand() % count;
     const char *name = pokemon_list[index].name;
-    const char *form = pokemon_list[index].forms[0];
+    const char *form;
+
+    // 检查是否有可用的形态
+    if (pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0]) {
+        form = pokemon_list[index].forms[0];
+    } else {
+        form = "regular"; // 默认形态
+    }
+
     printf("显示随机宝可梦: %s (%s)\n", name, form);
     display_pokemon(pokemon_list, count, name, form, shiny);
 }
@@ -142,6 +199,17 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         default:
             return ARGP_ERR_UNKNOWN;
     }
+
+    // 检查输入的名称和形态是否包含非法字符
+    if (arguments->pokemon_name && strpbrk(arguments->pokemon_name, "/\\:*?\"<>|")) {
+        printf("错误：宝可梦名称包含非法字符。\n");
+        exit(1);
+    }
+    if (arguments->form && strpbrk(arguments->form, "/\\:*?\"<>|")) {
+        printf("错误：形态名称包含非法字符。\n");
+        exit(1);
+    }
+
     return 0;
 }
 
@@ -162,6 +230,11 @@ int main(int argc, char **argv) {
     struct arguments arguments = {NULL, "regular", 0, 0, 0};
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
+    // 使用 gettimeofday() 初始化随机种子
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srand(tv.tv_sec * 1000000 + tv.tv_usec);  // 微秒级时间作为种子
+
     int pokemon_count;
     Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count);
     if (!pokemon_list) {
@@ -180,9 +253,13 @@ int main(int argc, char **argv) {
 
     // 释放分配的内存
     for (int i = 0; i < pokemon_count; i++) {
-        free(pokemon_list[i].name);
+        if (pokemon_list[i].name) {
+            free(pokemon_list[i].name);
+        }
         for (int j = 0; j < pokemon_list[i].form_count; j++) {
-            free(pokemon_list[i].forms[j]);
+            if (pokemon_list[i].forms[j]) {
+                free(pokemon_list[i].forms[j]);
+            }
         }
     }
     free(pokemon_list);
