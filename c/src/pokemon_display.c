@@ -6,20 +6,20 @@
 #include "cJSON.h"
 
 #define MAX_FORMS 10
-#define JSON_FILE_PATH "../assets/pokemon.json" // Adjusted path for your project structure
+#define JSON_FILE_PATH "../assets/pokemon.json"
 
-// Pokemon structure
+// 宝可梦结构体
 typedef struct {
     char *name;
     char *forms[MAX_FORMS];
     int form_count;
 } Pokemon;
 
-// Load Pokemon data from JSON file
+// 从 JSON 文件中加载宝可梦数据
 Pokemon *load_pokemon_data(const char *file_path, int *count) {
     FILE *file = fopen(file_path, "r");
     if (!file) {
-        perror("Unable to open JSON file");
+        perror("无法打开 JSON 文件");
         return NULL;
     }
 
@@ -35,7 +35,7 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
     cJSON *json = cJSON_Parse(json_data);
     free(json_data);
     if (!json) {
-        printf("Error parsing JSON file: %s\n", cJSON_GetErrorPtr());
+        printf("解析 JSON 文件错误: %s\n", cJSON_GetErrorPtr());
         return NULL;
     }
 
@@ -43,13 +43,8 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
     Pokemon *pokemon_list = (Pokemon *)malloc(pokemon_count * sizeof(Pokemon));
 
     for (int i = 0; i < pokemon_count; i++) {
-
-        cJSON *name_item = cJSON_GetObjectItem(pokemon_json, "name");
-        if (!name_item) {
-            printf("Error: Missing 'name' field in JSON.\n");
-            continue;
-        }
-        pokemon_list[i].name = strdup(name_item->valuestring);
+        cJSON *pokemon_json = cJSON_GetArrayItem(json, i);
+        pokemon_list[i].name = strdup(cJSON_GetObjectItem(pokemon_json, "name")->valuestring);
 
         cJSON *forms = cJSON_GetObjectItem(pokemon_json, "forms");
         int form_count = cJSON_GetArraySize(forms);
@@ -64,49 +59,65 @@ Pokemon *load_pokemon_data(const char *file_path, int *count) {
     return pokemon_list;
 }
 
-// List all Pokemon names
+// 列出所有宝可梦的名称
 void list_all_pokemon(Pokemon *pokemon_list, int count) {
     for (int i = 0; i < count; i++) {
         printf("%s\n", pokemon_list[i].name);
     }
 }
 
-// Display a specific Pokemon and its form
-void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form) {
+// 显示特定宝可梦及其形态
+void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
     for (int i = 0; i < count; i++) {
         if (strcmp(pokemon_list[i].name, name) == 0) {
-            for (int j = 0; j < pokemon_list[i].form_count; j++) {
-                if (strcmp(pokemon_list[i].forms[j], form) == 0) {
-                    printf("Displaying %s (%s):\n", name, form);
-                    // Insert code to display Unicode image here
-                    return;
-                }
+            // 构建宝可梦艺术文件的路径
+            char art_path[256];
+            if (strcmp(form, "regular") == 0) {
+                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", name);
+            } else {
+                snprintf(art_path, sizeof(art_path), "../assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", name, form);
             }
-            printf("Form %s not found for %s.\n", form, name);
+
+            // 打开艺术文件
+            FILE *art_file = fopen(art_path, "r");
+            if (!art_file) {
+                printf("无法读取宝可梦 '%s' 的艺术文件。\n", name);
+                return;
+            }
+
+            // 读取并打印艺术文件内容
+            char buffer[1024];
+            while (fgets(buffer, sizeof(buffer), art_file) != NULL) {
+                printf("%s", buffer);
+            }
+
+            fclose(art_file);
             return;
         }
     }
-    printf("Pokemon %s not found.\n", name);
+    printf("未找到宝可梦 %s。\n", name);
 }
 
-// Display a random Pokemon
-void display_random_pokemon(Pokemon *pokemon_list, int count) {
+// 显示随机宝可梦
+void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny) {
     srand(time(NULL));
     int index = rand() % count;
     const char *name = pokemon_list[index].name;
     const char *form = pokemon_list[index].forms[0];
-    printf("Displaying random Pokemon: %s (%s)\n", name, form);
-    // Insert code to display Unicode image here
+    printf("显示随机宝可梦: %s (%s)\n", name, form);
+    display_pokemon(pokemon_list, count, name, form, shiny);
 }
 
-// Argument parsing
+// 命令行参数结构体
 struct arguments {
     char *pokemon_name;
     char *form;
     int list;
     int random;
+    int shiny; // 用于显示闪光版宝可梦
 };
 
+// 解析命令行参数
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
     switch (key) {
@@ -115,6 +126,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->random = 1;
+            break;
+        case 's':
+            arguments->shiny = 1;
             break;
         case ARGP_KEY_ARG:
             if (state->arg_num == 0) {
@@ -133,18 +147,19 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 const char *argp_program_version = "pokemon-display 1.0";
 const char *argp_program_bug_address = "<example@example.com>";
-static char doc[] = "A command-line tool to display Pokémon Unicode images.";
+static char doc[] = "一个用于在终端显示宝可梦 ASCII 艺术的命令行工具。";
 static char args_doc[] = "[pokemon_name] [form]";
 static struct argp_option options[] = {
-    {"list", 'l', 0, 0, "List all Pokémon"},
-    {"random", 'r', 0, 0, "Display a random Pokémon"},
+    {"list", 'l', 0, 0, "列出所有宝可梦"},
+    {"random", 'r', 0, 0, "显示随机宝可梦"},
+    {"shiny", 's', 0, 0, "显示闪光版宝可梦"},
     {0}
 };
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
-// Main function
+// 主函数
 int main(int argc, char **argv) {
-    struct arguments arguments = {NULL, "regular", 0, 0};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0};
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
     int pokemon_count;
@@ -156,14 +171,14 @@ int main(int argc, char **argv) {
     if (arguments.list) {
         list_all_pokemon(pokemon_list, pokemon_count);
     } else if (arguments.random) {
-        display_random_pokemon(pokemon_list, pokemon_count);
+        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny);
     } else if (arguments.pokemon_name) {
-        display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form);
+        display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {
-        printf("No command specified. Use --help for more information.\n");
+        printf("未指定命令。使用 --help 查看更多信息。\n");
     }
 
-    // Free allocated memory
+    // 释放分配的内存
     for (int i = 0; i < pokemon_count; i++) {
         free(pokemon_list[i].name);
         for (int j = 0; j < pokemon_list[i].form_count; j++) {
