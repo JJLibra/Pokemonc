@@ -4,6 +4,7 @@ hello
 cJSON
 src/pokemon_display
 test
+binary
 src/pokemonc
 *.o
 pokemon_display
