@@ -10,6 +10,7 @@ typedef struct {
     char *desc;
     char *forms[MAX_FORMS];
     int form_count;
+    int gen;
 } Pokemon;
 
 Pokemon *load_pokemon_data(const char *file_path, int *count, const char *language);

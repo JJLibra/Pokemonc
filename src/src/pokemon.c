@@ -54,7 +54,7 @@ Pokemon *load_pokemon_data(const char *file_path, int *count, const char *langua
             continue;
         }
 
-        cJSON *name_item = cJSON_GetObjectItem(name_object, "en");
+        cJSON *name_item = cJSON_GetObjectItem(name_object, language);
         if (!name_item || !cJSON_IsString(name_item)) {
             pokemon_list[i].name = NULL;
             continue;
@@ -79,6 +79,9 @@ Pokemon *load_pokemon_data(const char *file_path, int *count, const char *langua
         } else {
             pokemon_list[i].desc = NULL;
         }
+
+        cJSON *gen_item = cJSON_GetObjectItem(pokemon_json, "gen");
+        pokemon_list[i].gen = gen_item && cJSON_IsNumber(gen_item) ? gen_item->valueint : 0;
 
         cJSON *forms = cJSON_GetObjectItem(pokemon_json, "forms");
         if (!forms || !cJSON_IsArray(forms)) {

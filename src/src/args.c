@@ -10,13 +10,16 @@
 #define COLOR_BOLD_PINK "\033[1;35m"
 #define COLOR_RESET "\033[0m"
 
+#define MAX_GEN 9
+#define MIN_GEN 1
+
 void print_random_help() {
     printf(COLOR_BOLD_PINK "pokemonc random\n" COLOR_RESET);
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
     printf("    pokemonc random [OPTIONS] [GENERATIONS]\n\n");
 
     printf(COLOR_YELLOW "ARGS:\n" COLOR_RESET);
-    printf(COLOR_GREEN "    <GENERATIONS>" COLOR_RESET "    Generation number, range (1-8), or list of generations (1,3,6) [default: 1-8]\n\n");
+    printf(COLOR_GREEN "    <GENERATIONS>" COLOR_RESET "    Generation number, range (1-9), or list of generations (1,3,6) [default: 1-9]\n\n");
 
     printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    -h, --help" COLOR_RESET "           Print help information\n");
@@ -50,6 +53,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->random = 1;
+            if (arguments->gen_min == 0 && arguments->gen_max == 0) {
+                arguments->gen_min = MIN_GEN;
+                arguments->gen_max = MAX_GEN;
+            }
             break;
         case 1001:
             arguments->no_title = 1;
@@ -72,13 +79,29 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case ARGP_KEY_ARG:
             if (arguments->random) {
                 // Handle random subcommand arguments (e.g., generations)
-                // Add additional logic here if needed
+                if (arg) {
+                    char *dash = strchr(arg, '-');
+                    if (dash) {
+                        *dash = '\0';
+                        arguments->gen_min = atoi(arg);
+                        arguments->gen_max = atoi(dash + 1);
+                    } else {
+                        arguments->gen_min = atoi(arg);
+                        arguments->gen_max = arguments->gen_min;
+                    }
+                }
             } else if (state->arg_num == 0) {
                 arguments->pokemon_name = arg;
             } else if (state->arg_num == 1) {
                 arguments->form = arg;
             } else {
                 argp_usage(state);
+            }
+            break;
+        case ARGP_KEY_END:
+            if (arguments->random && arguments->gen_min == 0 && arguments->gen_max == 0) {
+                arguments->gen_min = MIN_GEN;
+                arguments->gen_max = MAX_GEN;
             }
             break;
         default:
@@ -104,10 +127,10 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
     }
 
     static struct argp_option options[] = {
-        {"list", 'l', 0, 0, "列出所有宝可梦"},
-        {"random", 'r', 0, 0, "显示随机宝可梦"},
-        {"shiny", 's', 0, 0, "显示闪光版宝可梦"},
-        {"version", 'v', 0, 0, "显示版本信息"},
+        {"list", 'l', 0, 0, "List all Pokémon"},
+        {"random", 'r', 0, 0, "Show random Pokémon"},
+        {"shiny", 's', 0, 0, "Show a shiny Pokémon"},
+        {"version", 'v', 0, 0, "Displays version information"},
         {"no-title", 1001, 0, 0, "Do not display pokemon name"},
         {"no-mega", 1002, 0, 0, "Do not show mega pokemon"},
         {"no-gmax", 1003, 0, 0, "Do not show gigantamax pokemon"},
