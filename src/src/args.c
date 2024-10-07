@@ -54,6 +54,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 'r':
             arguments->random = 1;
             break;
+        case 'n':
+            arguments->pokemon_name = arg;
+            break;
         case 1001:
             arguments->no_title = 1;
             break;
@@ -73,7 +76,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             printf("pokemonc %s\n", arguments->version);
             exit(0);
         case ARGP_KEY_ARG:
-            if (arguments->random) {
+            if (strcmp(state->argv[1], "name") == 0) { // "name"
+                arguments->pokemon_name = arg;
+            } else if (arguments->random) {
                 if (strcmp(arg, "random") == 0) break; // Skip the "random" argument itself
 
                 // Handle comma-separated list
@@ -151,6 +156,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
     static struct argp_option options[] = {
         {"list", 'l', 0, 0, "List all Pokémon"},
         {"random", 'r', 0, 0, "Show random Pokémon"},
+        {"name", 'n', "NAME", 0, "Select Pokémon by name"},
         {"shiny", 's', 0, 0, "Show a shiny Pokémon"},
         {"version", 'v', 0, 0, "Displays version information"},
         {"no-title", 1001, 0, 0, "Do not display pokemon name"},
