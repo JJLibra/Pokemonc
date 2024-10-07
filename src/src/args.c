@@ -76,7 +76,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             printf("pokemonc %s\n", arguments->version);
             exit(0);
         case ARGP_KEY_ARG:
-            if (strcmp(state->argv[1], "name") == 0) { // "name"
+            if (strcmp(state->argv[1], "list") == 0) { // "list" subcommand
+                arguments->list = 1;
+            } else if (strcmp(state->argv[1], "name") == 0) { // "name" subcommand
                 arguments->pokemon_name = arg;
             } else if (arguments->random) {
                 if (strcmp(arg, "random") == 0) break; // Skip the "random" argument itself
