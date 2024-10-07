@@ -53,10 +53,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->random = 1;
-            if (arguments->gen_min == 0 && arguments->gen_max == 0) {
-                arguments->gen_min = MIN_GEN;
-                arguments->gen_max = MAX_GEN;
-            }
             break;
         case 1001:
             arguments->no_title = 1;
@@ -78,7 +74,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             exit(0);
         case ARGP_KEY_ARG:
             if (arguments->random) {
-                // Handle random subcommand arguments (e.g., generations)
+                if (strcmp(arg, "random") == 0) break;  // Skip the "random" argument itself
+
+                // Handle generation range
                 if (arg) {
                     char *dash = strchr(arg, '-');
                     if (dash) {
@@ -88,6 +86,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                     } else {
                         arguments->gen_min = atoi(arg);
                         arguments->gen_max = arguments->gen_min;
+                    }
+
+                    // Validate the generation range
+                    if (arguments->gen_min < MIN_GEN || arguments->gen_max > MAX_GEN || arguments->gen_min > arguments->gen_max) {
+                        printf(COLOR_YELLOW "Error: Invalid generation range %d-%d. Please specify a valid range between %d and %d.\n" COLOR_RESET, arguments->gen_min, arguments->gen_max, MIN_GEN, MAX_GEN);
+                        exit(1);
                     }
                 }
             } else if (state->arg_num == 0) {
@@ -111,6 +115,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 void parse_arguments(int argc, char **argv, struct arguments *arguments) {
+    arguments->gen_min = 0;
+    arguments->gen_max = 0;
+
     // Handle `random --help` case
     if (argc > 1 && strcmp(argv[1], "random") == 0) {
         arguments->random = 1;
