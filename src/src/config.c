@@ -7,7 +7,7 @@
 Config *load_config(const char *file_path) {
     FILE *file = fopen(file_path, "r");
     if (!file) {
-        perror("Unable to open profile.");
+        perror("Unable to open configuration file");
         return NULL;
     }
 
@@ -23,7 +23,7 @@ Config *load_config(const char *file_path) {
     cJSON *json = cJSON_Parse(json_data);
     free(json_data);
     if (!json) {
-        printf("Parsing profile error: %s\n", cJSON_GetErrorPtr());
+        printf("Error parsing configuration file: %s\n", cJSON_GetErrorPtr());
         return NULL;
     }
 
@@ -48,6 +48,9 @@ Config *load_config(const char *file_path) {
 
     cJSON *language_item = cJSON_GetObjectItem(json, "language");
     config->language = language_item && cJSON_IsString(language_item) ? strdup(language_item->valuestring) : strdup("en");
+
+    cJSON *shiny_prob_item = cJSON_GetObjectItem(json, "shiny_probability");
+    config->shiny_probability = shiny_prob_item && cJSON_IsNumber(shiny_prob_item) ? shiny_prob_item->valuedouble : 0.0;
 
     cJSON_Delete(json);
     return config;

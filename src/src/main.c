@@ -63,7 +63,9 @@ int main(int argc, char **argv) {
     if (arguments.list) {
         list_all_pokemon(pokemon_list, pokemon_count);
     } else if (arguments.random) {
-        display_random_pokemon(pokemon_list, pokemon_count, arguments.shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info);
+        double shiny_random_value = (rand() % 10000) / 100.0;
+        int shiny = shiny_random_value < config->shiny_probability;
+        display_random_pokemon(pokemon_list, pokemon_count, shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info);
     } else if (arguments.pokemon_name) {
         display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {

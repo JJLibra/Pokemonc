@@ -7,6 +7,7 @@ typedef struct {
     char *email;
     char *description;
     char *language;
+    double shiny_probability;
 } Config;
 
 Config *load_config(const char *file_path);
