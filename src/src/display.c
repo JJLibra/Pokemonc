@@ -42,17 +42,40 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
     printf("Pokémon %s not found.\n", name);
 }
 
-void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional, int info, int gen_min, int gen_max) {
+void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional, int info, int gen_min, int gen_max, int *gen_list, int gen_count) {
     int index;
     const char *form;
+    int valid_pokemon_found = 0;
 
     do {
         index = rand() % count;
         form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
-    } while ((no_mega && (strstr(form, "mega") != NULL || strstr(form, "mega-X") != NULL || strstr(form, "mega-Y") != NULL)) || 
-             (no_gmax && strstr(form, "gmax") != NULL) || 
-             (no_regional && (strstr(form, "alola") != NULL || strstr(form, "galar") != NULL || strstr(form, "hisui") != NULL || strstr(form, "paldea") != NULL)) ||
-             (pokemon_list[index].gen < gen_min || pokemon_list[index].gen > gen_max)); // 过滤世代
+        int pokemon_gen = pokemon_list[index].gen;
+        
+        int in_gen_list = 0;
+
+        // Check if the Pokémon's generation is in the specified gen_list
+        if (gen_count > 0) {
+            for (int i = 0; i < gen_count; i++) {
+                if (pokemon_gen == gen_list[i]) {
+                    in_gen_list = 1;
+                    break;
+                }
+            }
+        } else {
+            // If no gen_list is provided, use gen_min and gen_max
+            in_gen_list = (pokemon_gen >= gen_min && pokemon_gen <= gen_max);
+        }
+
+        // Ensure the Pokémon meets all filter criteria
+        if (in_gen_list &&
+            !(no_mega && (strstr(form, "mega") != NULL || strstr(form, "mega-X") != NULL || strstr(form, "mega-Y") != NULL)) &&
+            !(no_gmax && strstr(form, "gmax") != NULL) &&
+            !(no_regional && (strstr(form, "alola") != NULL || strstr(form, "galar") != NULL || strstr(form, "hisui") != NULL || strstr(form, "paldea") != NULL))) {
+            valid_pokemon_found = 1;
+        }
+
+    } while (!valid_pokemon_found); // Keep looping until a valid Pokémon is found
 
     const char *name = pokemon_list[index].name;
 

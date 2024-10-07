@@ -1,6 +1,8 @@
 #ifndef ARGS_H
 #define ARGS_H
 
+#define MAX_GEN_LIST 9
+
 struct arguments {
     char *pokemon_name;
     char *form;
@@ -14,6 +16,8 @@ struct arguments {
     int info;
     int gen_min;
     int gen_max;
+    int gen_list[MAX_GEN_LIST];
+    int gen_count;
     const char *version;
 };
 

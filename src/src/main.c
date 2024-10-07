@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, config->version};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}, 0, config->version};
     if (argc == 1) {
         print_usage(config);
         free_config(config);
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     } else if (arguments.random) {
         double shiny_random_value = (rand() % 10000) / 100.0;
         int shiny = shiny_random_value < config->shiny_probability;
-        display_random_pokemon(pokemon_list, pokemon_count, shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info, arguments.gen_min, arguments.gen_max);
+        display_random_pokemon(pokemon_list, pokemon_count, shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info, arguments.gen_min, arguments.gen_max, arguments.gen_list, arguments.gen_count);
     } else if (arguments.pokemon_name) {
         display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
     } else {

@@ -74,10 +74,24 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             exit(0);
         case ARGP_KEY_ARG:
             if (arguments->random) {
-                if (strcmp(arg, "random") == 0) break;  // Skip the "random" argument itself
+                if (strcmp(arg, "random") == 0) break; // Skip the "random" argument itself
 
-                // Handle generation range
-                if (arg) {
+                // Handle comma-separated list
+                if (strchr(arg, ',')) {
+                    char *token = strtok(arg, ",");
+                    arguments->gen_count = 0;
+
+                    while (token != NULL && arguments->gen_count < MAX_GEN_LIST) {
+                        int gen = atoi(token);
+                        if (gen < MIN_GEN || gen > MAX_GEN) {
+                            printf(COLOR_YELLOW "Error: Invalid generation number %d. Please specify a valid numeric generation between %d and %d.\n" COLOR_RESET, gen, MIN_GEN, MAX_GEN);
+                            exit(1);
+                        }
+                        arguments->gen_list[arguments->gen_count++] = gen;
+                        token = strtok(NULL, ",");
+                    }
+                } else {
+                    // Handle single generation or range
                     char *dash = strchr(arg, '-');
                     if (dash) {
                         *dash = '\0';
@@ -103,7 +117,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             }
             break;
         case ARGP_KEY_END:
-            if (arguments->random && arguments->gen_min == 0 && arguments->gen_max == 0) {
+            if (arguments->random && arguments->gen_min == 0 && arguments->gen_max == 0 && arguments->gen_count == 0) {
+                // Default to all generations if no specific input is given
                 arguments->gen_min = MIN_GEN;
                 arguments->gen_max = MAX_GEN;
             }
