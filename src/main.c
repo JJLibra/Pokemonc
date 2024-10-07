@@ -7,7 +7,7 @@
 #include "args.h"
 #include "config.h"
 
-#define CONFIG_FILE_PATH "config.json"
+#define CONFIG_FILE_PATH "/usr/local/share/pokemonc/config.json"
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"

@@ -19,9 +19,9 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
         if (pokemon_list[i].slug && strcmp(pokemon_list[i].slug, name) == 0) {
             char art_path[256];
             if (strcmp(form, "regular") == 0) {
-                snprintf(art_path, sizeof(art_path), "assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", pokemon_list[i].slug);
+                snprintf(art_path, sizeof(art_path), "/usr/local/share/pokemonc/assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", pokemon_list[i].slug);
             } else {
-                snprintf(art_path, sizeof(art_path), "assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", pokemon_list[i].slug, form);
+                snprintf(art_path, sizeof(art_path), "/usr/local/share/pokemonc/assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", pokemon_list[i].slug, form);
             }
 
             FILE *art_file = fopen(art_path, "r");
