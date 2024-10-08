@@ -152,7 +152,7 @@ pokemonc -r -i
 When the program is run, a configuration file will automatically be created in the user's config
 directory (usually `~/.config`) under `pokemonc/config.json` if it doesn't exist already. 
 
-```json
+```
 {
 	"language": "en", // en (English), fr (French), de (German), ja (Japanese), zh_hans (Chinese with simplified characters), zh_hant (Chinese with traditional characters)
 	"shiny_probability": 0.01
