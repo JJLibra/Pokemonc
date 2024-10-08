@@ -9,16 +9,28 @@
     </a>
 </p>
 
-Pokemonc is mostly a C rewrite of phoney badger's [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts) with some extra features.
+<div style="display: flex; align-items: flex-start;">
+  <img src="./screenshots/mewtwo.png" width="150" data-width="150" data-height="150" style="margin-right: 35px;">
+  <div style="display: flex; flex-direction: column;">
+    <p style="font-size: 16px;">
+      Pokemonc is mostly a C rewrite of phoney badger's 
+      <a href="https://gitlab.com/phoneybadger/pokemon-colorscripts">pokemon-colorscripts</a> 
+      with some extra features.
+    </p>
+    <p style="font-size: 16px;">
+      I developed it for the terminal startup display. I didn't find the C version of the program, so I tried to implement this project.
+    </p>
+    <p style="font-size: 16px;">
+      Pokémon was a part of my childhood and I love it!
+    </p>
+  </div>
+</div>
 
-<!-- ![](https://i.imgur.com/MVzaS3k.png) -->
-
-<!-- ## Table of contents
+## Table of contents
 * [Features](#features)
 * [Installation](#installation)
-  * [Arch Linux x86_64 (and derivatives)](#arch-linux-x86_64-and-derivatives)
   * [Ubuntu/Debian x86_64 (and derivatives)](#ubuntudebian-x86_64-and-derivatives)
-  * [Installing from source (other distros and MacOS/Windows)](#installing-from-source-other-distros-and-macoswindows)
+  * [Installing from script (other distros)](#Installing-from-script-other-distros)
 * [Usage](#usage)
   * [Examples](#examples)
 * [Configuration](#configuration)
@@ -35,54 +47,36 @@ Pokemonc is mostly a C rewrite of phoney badger's [pokemon-colorscripts](https:/
 
 ## Installation
 
-### Arch Linux x86_64 (and derivatives)
-
-From the AUR using your favorite AUR helper
-
-```
-yay -S krabby-bin
-```
-
-Or alternatively you can manually download the PKGBUILD file from the repository, then run
-```
-makepkg -si
-```
-
-There is also the development package [krabby-git](https://aur.archlinux.org/packages/krabby-git) that tracks the main branch.
-
 ### Ubuntu/Debian x86_64 (and derivatives)
 
 Download the latest `.deb` release. Then run (replacing v.v.v with the version number)
-```
-dpkg -i krabby_v.v.v_amd64.deb
-```
-
-### Homebrew
-
-Add the tap:
-```
-brew tap yannjor/krabby
+```shell
+dpkg -i pokemonc_v.v.v_amd64.deb
+# dpkg -r pokemonc
 ```
 
-Install:
-```
-brew install krabby
+### Installing from script (other distros)
+
+If you are using a Linux distribution other than Ubuntu/Debian or its derivatives, or you prefer to install the project from the source code, follow the steps below to install `pokemonc` using the provided `install.sh` script.
+
+1. Clone the repository
+First, clone the project repository to your local machine using the following command:
+```shell
+git clone https://github.com/JJLibra/Pokemonc.git pokemonc
+cd pokemonc
 ```
 
-### Installing from source (other distros and MacOS/Windows)
-
-To install krabby from source, you will need Rust. Installation instructions can be found [here](https://www.rust-lang.org/learn/get-started).
-
-Now using cargo, run
-```
-cargo install krabby
-```
-Make sure you have `.cargo/bin` added to your shell `PATH`. This can be done by adding the following to your `.profile`, `.bash_profile` or `.zprofile`
-```sh
-export PATH="$PATH:$HOME/.cargo/bin"
+2. Run the install script
+The installation script `install.sh` will copy the `pokemonc` binary to a system-wide location and set up the necessary configuration files in your home directory. This script will:
+  * Copy the `pokemonc` binary to `/usr/local/bin/`, allowing you to run `pokemonc` from anywhere in the terminal.
+  * Copy the `assets` folder and `config.json` to the `~/pokemonc` directory in your home folder.
+```shell
+sudo ./install.sh
+# sudo ./uninstall.sh
 ```
 
-## Usage
+
+<!-- ## Usage
 Run the help command `krabby help` to see the following help message.
 
 ```
