@@ -10,6 +10,7 @@
 #include "config.h"
 
 #define CONFIG_FILE_NAME "/pokemonc/config.json"
+#define JSON_FILE_NAME "/pokemonc/assets/pokemon.json"
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
@@ -40,6 +41,31 @@ char *get_config_file_path() {
     }
 
     return config_file_path;
+}
+
+char *get_json_file_path() {
+    char *home_dir = getenv("HOME");
+    if (!home_dir) {
+        printf("Unable to get user home directory path.\n");
+        return NULL;
+    }
+
+    char *json_file_path = malloc(strlen(home_dir) + strlen(JSON_FILE_NAME) + 1);
+    if (!json_file_path) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
+    strcpy(json_file_path, home_dir);
+    strcat(json_file_path, JSON_FILE_NAME);
+
+    if (access(json_file_path, F_OK) != 0) {
+        printf("JSON file not found: %s\n", json_file_path);
+        free(json_file_path);
+        return NULL;
+    }
+
+    return json_file_path;
 }
 
 void print_usage(Config *config) {
@@ -75,10 +101,17 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    char *json_file_path = get_json_file_path();
+    if (!json_file_path) {
+        free_config(config);
+        return 1;
+    }
+
     struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}, 0, config->version};
     if (argc == 1) {
         print_usage(config);
         free_config(config);
+        free(json_file_path);
         return 0;
     }
 
@@ -89,7 +122,8 @@ int main(int argc, char **argv) {
     srand(tv.tv_sec * 1000000 + tv.tv_usec);
 
     int pokemon_count;
-    Pokemon *pokemon_list = load_pokemon_data(JSON_FILE_PATH, &pokemon_count, config->language);
+    Pokemon *pokemon_list = load_pokemon_data(json_file_path, &pokemon_count, config->language);
+    free(json_file_path);
     if (!pokemon_list) {
         free_config(config);
         return 1;

@@ -1,7 +1,6 @@
 #ifndef POKEMON_H
 #define POKEMON_H
 
-#define JSON_FILE_PATH "/usr/local/share/pokemonc/assets/pokemon.json"
 #define MAX_FORMS 10
 
 typedef struct {

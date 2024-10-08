@@ -1,8 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "pokemon.h"
 #include "display.h"
+
+#define COLORSCRIPTS_PATH "/pokemonc/assets/colorscripts/"
+
+char *get_colorscripts_path(const char *slug, const char *form, int shiny) {
+    char *home_dir = getenv("HOME");
+    if (!home_dir) {
+        printf("Unable to get user home directory path.\n");
+        return NULL;
+    }
+
+    char *art_path = malloc(strlen(home_dir) + strlen(COLORSCRIPTS_PATH) + strlen(slug) + strlen(form) + 50);
+    if (!art_path) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
+    if (strcmp(form, "regular") == 0) {
+        snprintf(art_path, 256, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+    } else {
+        snprintf(art_path, 256, "%s%s%s/%s-%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug, form);
+    }
+
+    // printf("Art path: %s\n", art_path);
+    if (access(art_path, F_OK) != 0) {
+        printf("Art file not found: %s\n", art_path);
+        free(art_path);
+        return NULL;
+    }
+
+    return art_path;
+}
 
 void list_all_pokemon(Pokemon *pokemon_list, int count) {
     for (int i = 0; i < count; i++) {
@@ -17,16 +49,16 @@ void list_all_pokemon(Pokemon *pokemon_list, int count) {
 void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
     for (int i = 0; i < count; i++) {
         if (pokemon_list[i].slug && strcmp(pokemon_list[i].slug, name) == 0) {
-            char art_path[256];
-            if (strcmp(form, "regular") == 0) {
-                snprintf(art_path, sizeof(art_path), "/usr/local/share/pokemonc/assets/colorscripts/%s/%s", shiny ? "shiny" : "regular", pokemon_list[i].slug);
-            } else {
-                snprintf(art_path, sizeof(art_path), "/usr/local/share/pokemonc/assets/colorscripts/%s/%s-%s", shiny ? "shiny" : "regular", pokemon_list[i].slug, form);
+            char *art_path = get_colorscripts_path(pokemon_list[i].slug, form, shiny);
+            if (!art_path) {
+                printf("Unable to read art file for Pokémon '%s'.\n", name);
+                return;
             }
 
             FILE *art_file = fopen(art_path, "r");
+            free(art_path);
             if (!art_file) {
-                printf("Unable to read art file for Pokémon '%s'. Path: %s\n", name, art_path);
+                printf("Unable to open art file for Pokémon '%s'.\n", name);
                 return;
             }
 
