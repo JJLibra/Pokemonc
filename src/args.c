@@ -57,6 +57,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case 'n':
             arguments->pokemon_name = arg;
             break;
+        case 's':
+            arguments->shiny = 1;
+            break;
         case 1001:
             arguments->no_title = 1;
             break;
@@ -78,8 +81,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case ARGP_KEY_ARG:
             if (strcmp(state->argv[1], "list") == 0) { // "list" subcommand
                 arguments->list = 1;
-            } else if (strcmp(state->argv[1], "name") == 0) { // "name" subcommand
+            } else if (strcmp(state->argv[1], "name") == 0 && state->arg_num == 1) { // "name" subcommand
                 arguments->pokemon_name = arg;
+                printf("Pokemon name: %s\n", arguments->pokemon_name); // 方便调试
             } else if (arguments->random) {
                 if (strcmp(arg, "random") == 0) break; // Skip the "random" argument itself
 
