@@ -9,54 +9,56 @@
 #include "args.h"
 #include "config.h"
 
-#define CONFIG_FILE_NAME "/pokemonc/config.json"
-#define JSON_FILE_NAME "/pokemonc/assets/pokemon.json"
+#define JSON_FILE_PATH "/usr/local/share/pokemonc/assets/pokemon.json"
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
 #define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
 
+#define VERSION "0.1.0"
+#define AUTHOR "JJLibra"
+#define EMAIL "2565474095@qq.com"
+#define DESCRIPTION "Print Pokémon sprites in your terminal"
+
 char *get_config_file_path() {
-    const char *home_dir = getenv("HOME");
-    if (!home_dir) {
-        fprintf(stderr, "Unable to get user home directory path.\n");
-        return NULL;
-    }
+    const char *config_home = getenv("XDG_CONFIG_HOME");
+    char *config_file_path;
 
-    size_t path_len = strlen(home_dir) + strlen(CONFIG_FILE_NAME) + 1;
-    char *config_file_path = malloc(path_len);
-    if (!config_file_path) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        return NULL;
-    }
-
-    snprintf(config_file_path, path_len, "%s%s", home_dir, CONFIG_FILE_NAME);
-
-    if (access(config_file_path, F_OK) != 0) {
-        fprintf(stderr, "Configuration file not found: %s\n", config_file_path);
-        free(config_file_path);
-        return NULL;
+    if (!config_home || strlen(config_home) == 0) {
+        const char *home_dir = getenv("HOME");
+        if (!home_dir) {
+            fprintf(stderr, "Unable to get user home directory path.\n");
+            return NULL;
+        }
+        size_t path_len = strlen(home_dir) + strlen("/.config/pokemonc/config.json") + 1;
+        config_file_path = malloc(path_len);
+        if (!config_file_path) {
+            fprintf(stderr, "Memory allocation failed.\n");
+            return NULL;
+        }
+        snprintf(config_file_path, path_len, "%s/.config/pokemonc/config.json", home_dir);
+    } else {
+        size_t path_len = strlen(config_home) + strlen("/pokemonc/config.json") + 1;
+        config_file_path = malloc(path_len);
+        if (!config_file_path) {
+            fprintf(stderr, "Memory allocation failed.\n");
+            return NULL;
+        }
+        snprintf(config_file_path, path_len, "%s/pokemonc/config.json", config_home);
     }
 
     return config_file_path;
 }
 
 char *get_json_file_path() {
-    const char *home_dir = getenv("HOME");
-    if (!home_dir) {
-        fprintf(stderr, "Unable to get user home directory path.\n");
-        return NULL;
-    }
-
-    size_t path_len = strlen(home_dir) + strlen(JSON_FILE_NAME) + 1;
+    size_t path_len = strlen(JSON_FILE_PATH) + 1;
     char *json_file_path = malloc(path_len);
     if (!json_file_path) {
         fprintf(stderr, "Memory allocation failed.\n");
         return NULL;
     }
-
-    snprintf(json_file_path, path_len, "%s%s", home_dir, JSON_FILE_NAME);
+    snprintf(json_file_path, path_len, "%s", JSON_FILE_PATH);
 
     if (access(json_file_path, F_OK) != 0) {
         fprintf(stderr, "JSON file not found: %s\n", json_file_path);
@@ -67,10 +69,10 @@ char *get_json_file_path() {
     return json_file_path;
 }
 
-void print_usage(Config *config) {
-    printf(COLOR_GREEN "pokemonc" COLOR_RESET " %s\n", config->version);
-    printf(COLOR_BLUE "Author: %s <%s>\n" COLOR_RESET, config->author, config->email);
-    printf("%s\n\n", config->description);
+void print_usage() {
+    printf(COLOR_GREEN "pokemonc" COLOR_RESET " %s\n", VERSION);
+    printf(COLOR_BLUE "Author: %s <%s>\n" COLOR_RESET, AUTHOR, EMAIL);
+    printf("%s\n\n", DESCRIPTION);
 
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
     printf("    pokemonc <SUBCOMMAND>\n\n");
@@ -89,16 +91,22 @@ void print_usage(Config *config) {
 int main(int argc, char **argv) {
     char *config_file_path = get_config_file_path();
     if (!config_file_path) {
-        fprintf(stderr, "Unable to load configuration file. Exited.\n");
+        fprintf(stderr, "Unable to determine configuration file path. Exited.\n");
         return EXIT_FAILURE;
     }
 
     Config *config = load_config(config_file_path);
-    free(config_file_path);
     if (!config) {
-        fprintf(stderr, "Unable to load configuration file. Exited.\n");
-        return EXIT_FAILURE;
+        // If the configuration file does not exist, create a default configuration file
+        config = create_default_config(config_file_path);
+        if (!config) {
+            fprintf(stderr, "Failed to create default configuration file.\n");
+            free(config_file_path);
+            return EXIT_FAILURE;
+        }
+        printf("Default configuration file created at %s\n", config_file_path);
     }
+    free(config_file_path);
 
     char *json_file_path = get_json_file_path();
     if (!json_file_path) {
@@ -107,11 +115,11 @@ int main(int argc, char **argv) {
     }
 
     struct arguments arguments = {0};
-    arguments.version = config->version;
+    arguments.version = VERSION;
     arguments.form = "regular";
 
     if (argc == 1) {
-        print_usage(config);
+        print_usage();
         free_config(config);
         free(json_file_path);
         return EXIT_SUCCESS;

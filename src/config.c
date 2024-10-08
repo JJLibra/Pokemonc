@@ -1,67 +1,101 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cJSON.h"
+#include <sys/stat.h>
 #include "config.h"
+#include "cJSON.h"
 
-Config *load_config(const char *file_path) {
-    FILE *file = fopen(file_path, "r");
+Config *load_config(const char *config_file_path) {
+    FILE *file = fopen(config_file_path, "r");
     if (!file) {
-        perror("Unable to open configuration file");
         return NULL;
     }
 
     fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
+    long length = ftell(file);
+    rewind(file);
 
-    char *json_data = (char *)malloc(file_size + 1);
-    fread(json_data, 1, file_size, file);
+    char *data = (char *)malloc(length + 1);
+    if (!data) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        fclose(file);
+        return NULL;
+    }
+
+    fread(data, 1, length, file);
+    data[length] = '\0';
+
     fclose(file);
-    json_data[file_size] = '\0';
 
-    cJSON *json = cJSON_Parse(json_data);
-    free(json_data);
+    cJSON *json = cJSON_Parse(data);
+    free(data);
+
     if (!json) {
-        printf("Error parsing configuration file: %s\n", cJSON_GetErrorPtr());
+        fprintf(stderr, "Error parsing configuration file.\n");
         return NULL;
     }
 
     Config *config = (Config *)malloc(sizeof(Config));
     if (!config) {
-        printf("Memory allocation failed.\n");
+        fprintf(stderr, "Memory allocation failed.\n");
         cJSON_Delete(json);
         return NULL;
     }
 
-    cJSON *version_item = cJSON_GetObjectItem(json, "version");
-    config->version = version_item && cJSON_IsString(version_item) ? strdup(version_item->valuestring) : strdup("unknown");
+    cJSON *language = cJSON_GetObjectItemCaseSensitive(json, "language");
+    cJSON *shiny_probability = cJSON_GetObjectItemCaseSensitive(json, "shiny_probability");
 
-    cJSON *author_item = cJSON_GetObjectItem(json, "author");
-    config->author = author_item && cJSON_IsString(author_item) ? strdup(author_item->valuestring) : strdup("unknown");
-
-    cJSON *email_item = cJSON_GetObjectItem(json, "email");
-    config->email = email_item && cJSON_IsString(email_item) ? strdup(email_item->valuestring) : strdup("unknown");
-
-    cJSON *description_item = cJSON_GetObjectItem(json, "description");
-    config->description = description_item && cJSON_IsString(description_item) ? strdup(description_item->valuestring) : strdup("No description provided.");
-
-    cJSON *language_item = cJSON_GetObjectItem(json, "language");
-    config->language = language_item && cJSON_IsString(language_item) ? strdup(language_item->valuestring) : strdup("en");
-
-    cJSON *shiny_prob_item = cJSON_GetObjectItem(json, "shiny_probability");
-    config->shiny_probability = shiny_prob_item && cJSON_IsNumber(shiny_prob_item) ? shiny_prob_item->valuedouble : 0.0;
+    config->language = language && cJSON_IsString(language) ? strdup(language->valuestring) : strdup("en");
+    config->shiny_probability = shiny_probability && cJSON_IsNumber(shiny_probability) ? shiny_probability->valuedouble : 1.0;
 
     cJSON_Delete(json);
     return config;
 }
 
+Config *create_default_config(const char *config_file_path) {
+    char *config_dir = strdup(config_file_path);
+    char *last_slash = strrchr(config_dir, '/');
+    if (last_slash) {
+        *last_slash = '\0';
+        mkdir(config_dir, 0755);
+    }
+    free(config_dir);
+
+    Config *config = (Config *)malloc(sizeof(Config));
+    if (!config) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL;
+    }
+
+    config->language = strdup("en");
+    config->shiny_probability = 0.01;
+
+    cJSON *json = cJSON_CreateObject();
+    cJSON_AddStringToObject(json, "language", config->language);
+    cJSON_AddNumberToObject(json, "shiny_probability", config->shiny_probability);
+
+    char *json_data = cJSON_Print(json);
+
+    FILE *file = fopen(config_file_path, "w");
+    if (!file) {
+        fprintf(stderr, "Unable to create configuration file at %s\n", config_file_path);
+        cJSON_Delete(json);
+        free(json_data);
+        free_config(config);
+        return NULL;
+    }
+
+    fprintf(file, "%s", json_data);
+    fclose(file);
+
+    cJSON_Delete(json);
+    free(json_data);
+
+    return config;
+}
+
 void free_config(Config *config) {
     if (config) {
-        free(config->version);
-        free(config->author);
-        free(config->email);
-        free(config->description);
         free(config->language);
         free(config);
     }

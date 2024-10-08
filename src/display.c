@@ -5,17 +5,11 @@
 #include "pokemon.h"
 #include "display.h"
 
-#define COLORSCRIPTS_PATH "/pokemonc/assets/colorscripts/"
+#define COLORSCRIPTS_PATH "/usr/local/share/pokemonc/assets/colorscripts/"
 
 char *get_colorscripts_path(const char *slug, const char *form, int shiny) {
-    const char *home_dir = getenv("HOME");
-    if (!home_dir) {
-        fprintf(stderr, "Unable to get user home directory path.\n");
-        return NULL;
-    }
-
     // Calculate the required buffer size
-    size_t path_size = strlen(home_dir) + strlen(COLORSCRIPTS_PATH) + strlen(shiny ? "shiny" : "regular") + strlen(slug) + strlen(form) + 10;
+    size_t path_size = strlen(COLORSCRIPTS_PATH) + strlen(shiny ? "shiny" : "regular") + strlen(slug) + strlen(form) + 10;
     char *art_path = malloc(path_size);
     if (!art_path) {
         fprintf(stderr, "Memory allocation failed.\n");
@@ -24,14 +18,14 @@ char *get_colorscripts_path(const char *slug, const char *form, int shiny) {
 
     // Construct the path
     if (strcmp(form, "regular") == 0) {
-        snprintf(art_path, path_size, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+        snprintf(art_path, path_size, "%s%s/%s", COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
     } else {
-        snprintf(art_path, path_size, "%s%s%s/%s-%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug, form);
+        snprintf(art_path, path_size, "%s%s/%s-%s", COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug, form);
     }
 
     if (access(art_path, F_OK) != 0) {
         // Try default form
-        snprintf(art_path, path_size, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+        snprintf(art_path, path_size, "%s%s/%s", COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
         if (access(art_path, F_OK) != 0) {
             // Art file not found
             free(art_path);
