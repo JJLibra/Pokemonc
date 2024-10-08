@@ -2,17 +2,45 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+#include <string.h>
+#include <unistd.h>
 #include "pokemon.h"
 #include "display.h"
 #include "args.h"
 #include "config.h"
 
-#define CONFIG_FILE_PATH "/usr/local/share/pokemonc/config.json"
+#define CONFIG_FILE_NAME "/pokemonc/config.json"
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
 #define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
+
+char *get_config_file_path() {
+    char *home_dir = getenv("HOME");
+    if (!home_dir) {
+        printf("Unable to get user home directory path.\n");
+        return NULL;
+    }
+
+    char *config_file_path = malloc(strlen(home_dir) + strlen(CONFIG_FILE_NAME) + 1);
+    if (!config_file_path) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
+    strcpy(config_file_path, home_dir);
+    strcat(config_file_path, CONFIG_FILE_NAME);
+
+    // printf("The path of the spliced configuration file: %s\n", config_file_path);
+    if (access(config_file_path, F_OK) != 0) {
+        printf("Configuration file not found: %s\n", config_file_path);
+        free(config_file_path);
+        return NULL;
+    }
+
+    return config_file_path;
+}
 
 void print_usage(Config *config) {
     printf(COLOR_GREEN "pokemonc" COLOR_RESET " %s\n", config->version);
@@ -21,11 +49,11 @@ void print_usage(Config *config) {
 
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
     printf("    pokemonc <SUBCOMMAND>\n\n");
-    
+
     printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    -h, --help" COLOR_RESET "       Print help information\n");
     printf(COLOR_GREEN "    -v, --version" COLOR_RESET "    Print version information\n\n");
-    
+
     printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
     printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all pokemon\n");
@@ -34,9 +62,16 @@ void print_usage(Config *config) {
 }
 
 int main(int argc, char **argv) {
-    Config *config = load_config(CONFIG_FILE_PATH);
+    char *config_file_path = get_config_file_path();
+    if (!config_file_path) {
+        printf("Unable to load configuration file. Exited.\n");
+        return 1;
+    }
+
+    Config *config = load_config(config_file_path);
+    free(config_file_path);
     if (!config) {
-        printf("The configuration file could not be loaded. Exited.\n");
+        printf("Unable to load configuration file. Exited.\n");
         return 1;
     }
 
