@@ -31,6 +31,21 @@ void print_random_help() {
     printf(COLOR_GREEN "        --no-title" COLOR_RESET "       Do not display pokemon name\n");
 }
 
+void print_name_help() {
+    printf(COLOR_BOLD_PINK "pokemonc name\n" COLOR_RESET);
+    printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
+    printf("    pokemonc name [OPTIONS] <POKEMON_NAME> [FORM]\n\n");
+
+    printf(COLOR_YELLOW "ARGS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    <POKEMON_NAME>" COLOR_RESET "    Name of the Pokémon\n");
+    printf(COLOR_GREEN "    [FORM]" COLOR_RESET "           Form of the Pokémon (optional)\n\n");
+
+    printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
+    printf(COLOR_GREEN "    -h, --help" COLOR_RESET "           Print help information\n");
+    printf(COLOR_GREEN "    -s, --shiny" COLOR_RESET "          Show shiny version\n");
+    printf(COLOR_GREEN "    -f, --form" COLOR_RESET "           Specify the form\n\n");
+}
+
 void print_general_help() {
     printf(COLOR_YELLOW "USAGE:\n" COLOR_RESET);
     printf("    pokemonc <SUBCOMMAND>\n\n");
@@ -50,6 +65,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
     arguments->gen_min = 0;
     arguments->gen_max = 0;
     arguments->name_subcommand = 0; // Initialize name subcommand flag
+    arguments->form = NULL; // Initialize form to NULL
 
     // Handle general `--help`
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)) {
@@ -91,11 +107,16 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         {"no-gmax", no_argument, 0, 1003},
         {"no-regional", no_argument, 0, 1004},
         {"info", no_argument, 0, 'i'},
+        {"form", required_argument, 0, 'f'},
         {"help", no_argument, 0, 'h'},
         {0, 0, 0, 0}
     };
 
-    while ((opt = getopt_long(argc, argv, "lrn:svih", long_options, &option_index)) != -1) {
+    // Reset getopt internal variables
+    optind = 1;
+    opterr = 0;
+
+    while ((opt = getopt_long(argc, argv, "lrn:svihf:", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'l':
                 arguments->list = 1;
@@ -115,9 +136,14 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
             case 'i':
                 arguments->info = 1;
                 break;
+            case 'f':
+                arguments->form = optarg;
+                break;
             case 'h':
                 if (arguments->random) {
                     print_random_help();
+                } else if (arguments->name_subcommand) {
+                    print_name_help();
                 } else {
                     print_general_help();
                 }
@@ -188,7 +214,8 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
             printf(COLOR_YELLOW "Error: No Pokémon name provided.\n" COLOR_RESET);
             exit(1);
         }
-        if (optind < argc) {
+        // If form is not specified via -f, check for positional form argument
+        if (optind < argc && arguments->form == NULL) {
             arguments->form = argv[optind++];
         }
     } else {
@@ -199,5 +226,10 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
                 arguments->form = argv[optind++];
             }
         }
+    }
+
+    // Set default form if not specified
+    if (arguments->form == NULL) {
+        arguments->form = "regular";
     }
 }
