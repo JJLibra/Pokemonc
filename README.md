@@ -16,7 +16,7 @@
     </td>
     <td style="width: 100%; padding-left: 10px;">
       Pokemonc is mostly a C rewrite of phoney badger's 
-      <a href="https://gitlab.com/phoneybadger/pokemon-colorscripts">pokemon-colorscripts</a> <br>
+      <a href="https://gitlab.com/phoneybadger/pokemon-colorscripts">pokemon-colorscripts</a> 
       with some extra features.<br><br>
       I developed it for the terminal startup display.<br>I didn't find the C version of the program, 
       so I tried to implement this project.<br><br>
