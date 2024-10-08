@@ -1,10 +1,15 @@
-# Pokemonc
+<h1 align="center">Pokemonc</h1>
 
-<!-- ![Crates.io version](https://img.shields.io/crates/v/krabby)
-![AUR version](https://img.shields.io/aur/version/krabby-bin) -->
+<p align="center">
+    <a target="_blank" href="https://github.com/JJLibra">
+      <img style="display:inline-block;margin:0.2em;" alt="Author" src="https://img.shields.io/badge/Author-Junjie Li-green.svg?logo=autoit&style=flat">
+    </a>
+    <a target="_blank" href="https://github.com/JJLibra/Pokemonc">
+      <img style="display:inline-block;margin:0.2em;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/JJLibra/Pokemonc?style=social">
+    </a>
+</p>
 
-Pokemonc is mostly a C rewrite of phoney badger's [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts)
-with some extra features.
+Pokemonc is mostly a C rewrite of phoney badger's [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts) with some extra features.
 
 <!-- ![](https://i.imgur.com/MVzaS3k.png) -->
 
