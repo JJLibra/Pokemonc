@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <getopt.h>
 #include "args.h"
 #include "config.h"
-#include <getopt.h>
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_YELLOW "\033[33m"
@@ -24,11 +23,11 @@ void print_random_help() {
 
     printf(COLOR_YELLOW "OPTIONS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    -h, --help" COLOR_RESET "           Print help information\n");
-    printf(COLOR_GREEN "    -i, --info" COLOR_RESET "           Print pokedex entry (if it exists)\n");
-    printf(COLOR_GREEN "        --no-gmax" COLOR_RESET "        Do not show gigantamax pokemon\n");
-    printf(COLOR_GREEN "        --no-mega" COLOR_RESET "        Do not show mega pokemon\n");
-    printf(COLOR_GREEN "        --no-regional" COLOR_RESET "    Do not show regional pokemon\n");
-    printf(COLOR_GREEN "        --no-title" COLOR_RESET "       Do not display pokemon name\n");
+    printf(COLOR_GREEN "    -i, --info" COLOR_RESET "           Print Pokédex entry (if it exists)\n");
+    printf(COLOR_GREEN "        --no-gmax" COLOR_RESET "        Do not show Gigantamax Pokémon\n");
+    printf(COLOR_GREEN "        --no-mega" COLOR_RESET "        Do not show Mega Pokémon\n");
+    printf(COLOR_GREEN "        --no-regional" COLOR_RESET "    Do not show regional Pokémon\n");
+    printf(COLOR_GREEN "        --no-title" COLOR_RESET "       Do not display Pokémon name\n");
 }
 
 void print_name_help() {
@@ -56,21 +55,21 @@ void print_general_help() {
 
     printf(COLOR_YELLOW "SUBCOMMANDS:\n" COLOR_RESET);
     printf(COLOR_GREEN "    help" COLOR_RESET "             Print this message or the help of the given subcommand(s)\n");
-    printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all pokemon\n");
-    printf(COLOR_GREEN "    name" COLOR_RESET "             Select pokemon by name. Generally spelled like in the games.\n");
-    printf(COLOR_GREEN "    random" COLOR_RESET "           Show a random pokemon.\n\n");
+    printf(COLOR_GREEN "    list" COLOR_RESET "             Print list of all Pokémon\n");
+    printf(COLOR_GREEN "    name" COLOR_RESET "             Select Pokémon by name. Generally spelled like in the games.\n");
+    printf(COLOR_GREEN "    random" COLOR_RESET "           Show a random Pokémon.\n\n");
 }
 
-void parse_arguments(int argc, char **argv, struct arguments *arguments) {
+int parse_arguments(int argc, char **argv, struct arguments *arguments) {
     arguments->gen_min = 0;
     arguments->gen_max = 0;
-    arguments->name_subcommand = 0; // Initialize name subcommand flag
-    arguments->form = NULL; // Initialize form to NULL
+    arguments->name_subcommand = 0;
+    arguments->form = NULL;
 
     // Handle general `--help`
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)) {
         print_general_help();
-        exit(0);
+        return 0;
     }
 
     // Subcommand handling
@@ -89,7 +88,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
             argv++;
         } else if (strcmp(argv[1], "help") == 0) {
             print_general_help();
-            exit(0);
+            return 0;
         }
     }
 
@@ -162,7 +161,7 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
                 break;
             default:
                 print_general_help();
-                exit(1);
+                return -1;
         }
     }
 
@@ -178,8 +177,8 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
                 while (token != NULL && arguments->gen_count < MAX_GEN_LIST) {
                     int gen = atoi(token);
                     if (gen < MIN_GEN || gen > MAX_GEN) {
-                        printf(COLOR_YELLOW "Error: Invalid generation number %d. Please specify a valid numeric generation between %d and %d.\n" COLOR_RESET, gen, MIN_GEN, MAX_GEN);
-                        exit(1);
+                        fprintf(stderr, COLOR_YELLOW "Error: Invalid generation number %d. Please specify a valid numeric generation between %d and %d.\n" COLOR_RESET, gen, MIN_GEN, MAX_GEN);
+                        return -1;
                     }
                     arguments->gen_list[arguments->gen_count++] = gen;
                     token = strtok(NULL, ",");
@@ -198,8 +197,8 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
 
                 // Validate the generation range
                 if (arguments->gen_min < MIN_GEN || arguments->gen_max > MAX_GEN || arguments->gen_min > arguments->gen_max) {
-                    printf(COLOR_YELLOW "Error: Invalid generation range %d-%d. Please specify a valid range between %d and %d.\n" COLOR_RESET, arguments->gen_min, arguments->gen_max, MIN_GEN, MAX_GEN);
-                    exit(1);
+                    fprintf(stderr, COLOR_YELLOW "Error: Invalid generation range %d-%d. Please specify a valid range between %d and %d.\n" COLOR_RESET, arguments->gen_min, arguments->gen_max, MIN_GEN, MAX_GEN);
+                    return -1;
                 }
             }
         } else {
@@ -211,8 +210,8 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
         if (optind < argc) {
             arguments->pokemon_name = argv[optind++];
         } else {
-            printf(COLOR_YELLOW "Error: No Pokémon name provided.\n" COLOR_RESET);
-            exit(1);
+            fprintf(stderr, COLOR_YELLOW "Error: No Pokémon name provided.\n" COLOR_RESET);
+            return -1;
         }
         // If form is not specified via -f, check for positional form argument
         if (optind < argc && arguments->form == NULL) {
@@ -232,4 +231,6 @@ void parse_arguments(int argc, char **argv, struct arguments *arguments) {
     if (arguments->form == NULL) {
         arguments->form = "regular";
     }
+
+    return 0;
 }

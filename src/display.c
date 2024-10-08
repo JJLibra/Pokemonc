@@ -8,30 +8,32 @@
 #define COLORSCRIPTS_PATH "/pokemonc/assets/colorscripts/"
 
 char *get_colorscripts_path(const char *slug, const char *form, int shiny) {
-    char *home_dir = getenv("HOME");
+    const char *home_dir = getenv("HOME");
     if (!home_dir) {
-        printf("Unable to get user home directory path.\n");
+        fprintf(stderr, "Unable to get user home directory path.\n");
         return NULL;
     }
 
-    char *art_path = malloc(strlen(home_dir) + strlen(COLORSCRIPTS_PATH) + strlen(slug) + strlen(form) + 50);
+    // Calculate the required buffer size
+    size_t path_size = strlen(home_dir) + strlen(COLORSCRIPTS_PATH) + strlen(shiny ? "shiny" : "regular") + strlen(slug) + strlen(form) + 10;
+    char *art_path = malloc(path_size);
     if (!art_path) {
-        printf("Memory allocation failed.\n");
+        fprintf(stderr, "Memory allocation failed.\n");
         return NULL;
     }
 
+    // Construct the path
     if (strcmp(form, "regular") == 0) {
-        snprintf(art_path, 256, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+        snprintf(art_path, path_size, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
     } else {
-        snprintf(art_path, 256, "%s%s%s/%s-%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug, form);
+        snprintf(art_path, path_size, "%s%s%s/%s-%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug, form);
     }
 
-    // printf("Art path: %s\n", art_path);
     if (access(art_path, F_OK) != 0) {
         // Try default form
-        snprintf(art_path, 256, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+        snprintf(art_path, path_size, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
         if (access(art_path, F_OK) != 0) {
-            printf("Art file not found: %s\n", art_path);
+            // Art file not found
             free(art_path);
             return NULL;
         }
@@ -55,14 +57,14 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
         if (pokemon_list[i].slug && strcmp(pokemon_list[i].slug, name) == 0) {
             char *art_path = get_colorscripts_path(pokemon_list[i].slug, form, shiny);
             if (!art_path) {
-                printf("Unable to read art file for Pokémon '%s'.\n", name);
+                fprintf(stderr, "Unable to read art file for Pokémon '%s'.\n", name);
                 return;
             }
 
             FILE *art_file = fopen(art_path, "r");
             free(art_path);
             if (!art_file) {
-                printf("Unable to open art file for Pokémon '%s'.\n", name);
+                fprintf(stderr, "Unable to open art file for Pokémon '%s'.\n", name);
                 return;
             }
 
@@ -75,18 +77,21 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
             return;
         }
     }
-    printf("Pokémon %s not found.\n", name);
+    fprintf(stderr, "Pokémon %s not found.\n", name);
 }
 
 void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional, int info, int gen_min, int gen_max, int *gen_list, int gen_count) {
     int index;
     const char *form;
     int valid_pokemon_found = 0;
+    int max_attempts = 1000; // To prevent infinite loops
+    int attempts = 0;
 
-    do {
+    while (!valid_pokemon_found && attempts < max_attempts) {
         index = rand() % count;
-        form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
-        int pokemon_gen = pokemon_list[index].gen;
+        Pokemon *p = &pokemon_list[index];
+        form = p->form_count > 0 && p->forms[0] ? p->forms[0] : "regular";
+        int pokemon_gen = p->gen;
 
         int in_gen_list = 0;
 
@@ -111,7 +116,13 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
             valid_pokemon_found = 1;
         }
 
-    } while (!valid_pokemon_found); // Keep looping until a valid Pokémon is found
+        attempts++;
+    }
+
+    if (!valid_pokemon_found) {
+        fprintf(stderr, "No Pokémon found matching the specified criteria.\n");
+        return;
+    }
 
     const char *name = pokemon_list[index].slug;
 
