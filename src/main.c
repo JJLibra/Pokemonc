@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}, 0, config->version};
+    struct arguments arguments = {NULL, "regular", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}, 0, 0, config->version};
     if (argc == 1) {
         print_usage(config);
         free_config(config);

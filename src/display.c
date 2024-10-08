@@ -28,9 +28,13 @@ char *get_colorscripts_path(const char *slug, const char *form, int shiny) {
 
     // printf("Art path: %s\n", art_path);
     if (access(art_path, F_OK) != 0) {
-        printf("Art file not found: %s\n", art_path);
-        free(art_path);
-        return NULL;
+        // Try default form
+        snprintf(art_path, 256, "%s%s%s/%s", home_dir, COLORSCRIPTS_PATH, shiny ? "shiny" : "regular", slug);
+        if (access(art_path, F_OK) != 0) {
+            printf("Art file not found: %s\n", art_path);
+            free(art_path);
+            return NULL;
+        }
     }
 
     return art_path;
@@ -83,7 +87,7 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
         index = rand() % count;
         form = pokemon_list[index].form_count > 0 && pokemon_list[index].forms[0] ? pokemon_list[index].forms[0] : "regular";
         int pokemon_gen = pokemon_list[index].gen;
-        
+
         int in_gen_list = 0;
 
         // Check if the Pokémon's generation is in the specified gen_list
