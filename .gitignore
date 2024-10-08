@@ -11,5 +11,5 @@ binary
 src/pokemonc
 *.o
 pokemon_display
-pokemonc
+# pokemonc
 packages
