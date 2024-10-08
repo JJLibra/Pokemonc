@@ -96,9 +96,9 @@ SUBCOMMANDS:
     random           Show a random pokemon.
 ```
 
-<!-- To get more detailed information about a subcommand you can also view its help, for example
+To get more detailed information about a subcommand you can also view its help, for example
 ```
-pokemonc help random
+pokemonc random --help
 ```
 To get the help of the random subcommand.
 
@@ -106,52 +106,58 @@ To get the help of the random subcommand.
 Print a specific pokemon
 ```
 pokemonc name charizard
+pokemonc -n charizard
 ```
 Print a specific shiny pokemon
 ```
 pokemonc name spheal -s
+pokemonc -n spheal -s
 ```
 Print a specific pokemon together with its pokedex entry
 ```
 pokemonc name mudkip -i
+pokemonc -n mudkip -i
 ```
 Print an alternative form of a pokemon
 ```
 pokemonc name blastoise -f mega
+pokemonc name mewtwo -f mega-x
 ```
 Print a random pokemon (gens 1-9)
 ```
 pokemonc random
+pokemonc -r
 ```
 Print random pokemon from generations 1-3
 ```
 pokemonc random 1-3
+pokemonc -r 1-3
 ```
 Print a random pokemon from generations 1,3 and 6
 ```
 pokemonc random 1,3,6
+pokemonc -r 1,3,6
 ```
 Print a random pokemon excluding megas, gigantamax and regional variants
 ```
 pokemonc random --no-mega --no-gmax --no-regional
 ```
+Print a random pokemon together with its pokedex entry
+```
+pokemonc random -i
+pokemonc -r -i
+```
 
 ## Configuration
-When the program is run, a TOML config file will automatically be created in the user's config
-directory (usually `~/.config`) under `pokemonc/config.toml` if it doesn't exist already. 
+When the program is run, a configuration file will automatically be created in the user's config
+directory (usually `~/.config`) under `pokemonc/config.json` if it doesn't exist already. 
 
-On MacOS the config will be in: `/Users/<username>/Library/Application Support/pokemonc`
-On Windows this will be: `C:\Users\<username>\AppData\Roaming\pokemonc`
-
-```toml
-# The language to use when printing the pokemon's name and/or description.
-# Possible options include en (English), fr (French), de (German), ja (Japanese),
-# zh_hans (Chinese with simplified characters), zh_hant (Chinese with traditional characters)
-language = 'en'
-
-# The probability to show a shiny pokemon when using the random command
-shiny_rate = 0.0078125
-``` -->
+```json
+{
+	"language": "en", // en (English), fr (French), de (German), ja (Japanese), zh_hans (Chinese with simplified characters), zh_hant (Chinese with traditional characters)
+	"shiny_probability": 0.01
+}
+```
 
 ## Credits
 
