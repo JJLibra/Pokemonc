@@ -1,11 +1,11 @@
-<h1 align="center">Pokemonc</h1>
+<h1 align="left">Pokemonc</h1>
 
-<p align="center">
+<p align="left">
     <a target="_blank" href="https://github.com/JJLibra">
-      <img style="display:inline-block;margin:0.2em;" alt="Author" src="https://img.shields.io/badge/Author-Junjie Li-green.svg?logo=autoit&style=flat">
+      <img style="display:inline-block;margin:1px;" alt="Author" src="https://img.shields.io/badge/Author-Junjie Li-green.svg?logo=autoit&style=flat">
     </a>
     <a target="_blank" href="https://github.com/JJLibra/Pokemonc">
-      <img style="display:inline-block;margin:0.2em;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/JJLibra/Pokemonc?style=social">
+      <img style="display:inline-block;margin:1px;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/JJLibra/Pokemonc?style=social">
     </a>
 </p>
 
