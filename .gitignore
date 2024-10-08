@@ -12,3 +12,4 @@ src/pokemonc
 *.o
 pokemon_display
 pokemonc
+packages
