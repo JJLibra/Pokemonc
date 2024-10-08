@@ -9,21 +9,21 @@
     </a>
 </p>
 
-<p align="left">
-  <img src="./screenshots/mewtwo.png" width="150" alt="Mewtwo" style="float: left; margin-right: 20px;">
-</p>
-
-<p style="font-size: 16px;">
-  Pokemonc is mostly a C rewrite of phoney badger's 
-  <a href="https://gitlab.com/phoneybadger/pokemon-colorscripts">pokemon-colorscripts</a> 
-  <br>with some extra features.
-</p>
-<p style="font-size: 16px;">
-  I developed it for the terminal startup display.<br>I didn't find the C version of the program, so I tried to implement this project.
-</p>
-<p style="font-size: 16px;">
-  Pokémon was a part of my childhood and I love it!
-</p>
+<table style="width: 100%; border-spacing: 0;">
+  <tr>
+    <td style="width: 150px; padding: 0;">
+      <img src="./screenshots/mewtwo.png" width="150" data-width="150" data-height="150">
+    </td>
+    <td style="width: 100%; padding-left: 10px;">
+      Pokemonc is mostly a C rewrite of phoney badger's 
+      <a href="https://gitlab.com/phoneybadger/pokemon-colorscripts">pokemon-colorscripts</a> <br>
+      with some extra features.<br><br>
+      I developed it for the terminal startup display.<br>I didn't find the C version of the program, 
+      so I tried to implement this project.<br><br>
+      Pokémon was a part of my childhood and I love it!
+    </td>
+  </tr>
+</table>
 
 ## Table of contents
 
@@ -32,8 +32,6 @@
   * [Ubuntu/Debian x86_64 (and derivatives)](#ubuntudebian-x86_64-and-derivatives)
   * [Installing from script (other distros)](#Installing-from-script-other-distros)
 * [Usage](#usage)
-  * [Examples](#examples)
-* [Configuration](#configuration)
 * [Credits](#credits)
 * [Similar projects](#similar-projects)
 
