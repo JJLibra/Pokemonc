@@ -75,75 +75,69 @@ sudo ./install.sh
 # sudo ./uninstall.sh
 ```
 
-
-<!-- ## Usage
-Run the help command `krabby help` to see the following help message.
+## Usage
+Run the help command `pokemonc --help` to see the following help message.
 
 ```
 USAGE:
-    krabby <SUBCOMMAND>
+    pokemonc <SUBCOMMAND>
 
 OPTIONS:
     -h, --help       Print help information
-    -V, --version    Print version information
+    -v, --version    Print version information
 
 SUBCOMMANDS:
-    help      Print this message or the help of the given subcommand(s)
-    list      Print list of all pokemon
-    name      Select pokemon by name. Generally spelled like in the games. A few exceptions are
-                  nidoran-f, nidoran-m, mr-mime, farfetchd, flabebe type-null etc. Perhaps grep the
-                  output of list if in doubt
-    random    Show a random pokemon. This command can optionally be followed by a generation
-                  number or range (1-9) to show random pokemon from a specific generation or range
-                  of generations. The generations can be provided as a continuous range (eg. 1-3) or
-                  as a list of generations (1,3,6)
+    help             Print this message or the help of the given subcommand(s)
+    list             Print list of all pokemon
+    name             Select pokemon by name. Generally spelled like in the games.
+    random           Show a random pokemon.
 ```
-To get more detailed information about a subcommand you can also view its help, for example
+<!-- To get more detailed information about a subcommand you can also view its help, for example
 ```
-krabby help random
+pokemonc help random
 ```
 To get the help of the random subcommand.
 
 ### Examples
 Print a specific pokemon
 ```
-krabby name charizard
+pokemonc name charizard
 ```
 Print a specific shiny pokemon
 ```
-krabby name spheal -s
+pokemonc name spheal -s
 ```
 Print a specific pokemon together with its pokedex entry
 ```
-krabby name mudkip -i
+pokemonc name mudkip -i
 ```
 Print an alternative form of a pokemon
 ```
-krabby name blastoise -f mega
+pokemonc name blastoise -f mega
 ```
 Print a random pokemon (gens 1-9)
 ```
-krabby random
+pokemonc random
 ```
 Print random pokemon from generations 1-3
 ```
-krabby random 1-3
+pokemonc random 1-3
 ```
 Print a random pokemon from generations 1,3 and 6
 ```
-krabby random 1,3,6
+pokemonc random 1,3,6
 ```
 Print a random pokemon excluding megas, gigantamax and regional variants
 ```
-krabby random --no-mega --no-gmax --no-regional
+pokemonc random --no-mega --no-gmax --no-regional
 ```
 
 ## Configuration
 When the program is run, a TOML config file will automatically be created in the user's config
-directory (usually `~/.config`) under `krabby/config.toml` if it doesn't exist already. 
+directory (usually `~/.config`) under `pokemonc/config.toml` if it doesn't exist already. 
 
-On MacOS the config will be in: `/Users/<username>/Library/Application Support/krabby`
-On Windows this will be: `C:\Users\<username>\AppData\Roaming\krabby`
+On MacOS the config will be in: `/Users/<username>/Library/Application Support/pokemonc`
+On Windows this will be: `C:\Users\<username>\AppData\Roaming\pokemonc`
 
 ```toml
 # The language to use when printing the pokemon's name and/or description.
@@ -153,13 +147,14 @@ language = 'en'
 
 # The probability to show a shiny pokemon when using the random command
 shiny_rate = 0.0078125
-```
+``` -->
 
 ## Credits
-The pokemon sprites for krabby were generated using sprites from [PokéSprite](https://msikma.github.io/pokesprite/)
+The pokemon sprites for `pokemonc` were generated using sprites from [PokéSprite](https://msikma.github.io/pokesprite/)
 and converted to unicode using Phoney Badger's [pokemon-generator-scripts](https://gitlab.com/phoneybadger/pokemon-generator-scripts).
 
 ## Similar projects
 - [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts)
+- [krabby](https://github.com/yannjor/krabby)
 - [pokeget](https://github.com/talwat/pokeget)
-- [pokeshell](https://github.com/acxz/pokeshell) -->
+- [pokeshell](https://github.com/acxz/pokeshell)
