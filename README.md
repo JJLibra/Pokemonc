@@ -77,6 +77,11 @@ sudo ./install.sh
 # sudo ./uninstall.sh
 ```
 
+### Other
+
+The current project does not support Windows and Mac systems.
+And the other installations are looking for. Of course, you are welcome to provide it to me.
+
 ## Usage
 
 Run the help command `pokemonc --help` to see the following help message.
