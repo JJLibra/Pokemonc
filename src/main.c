@@ -16,7 +16,7 @@
 #define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
 
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 #define AUTHOR "JJLibra"
 #define EMAIL "2565474095@qq.com"
 #define DESCRIPTION "Print Pokémon sprites in your terminal"

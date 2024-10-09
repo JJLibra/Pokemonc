@@ -118,11 +118,11 @@ Print a specific shiny pokemon
 pokemonc name spheal -s
 pokemonc -n spheal -s
 ```
-<!-- Print a specific pokemon together with its pokedex entry
+Print a specific pokemon together with its pokedex entry
 ```
 pokemonc name mudkip -i
 pokemonc -n mudkip -i
-``` -->
+```
 Print an alternative form of a pokemon
 ```
 pokemonc name blastoise -f mega
