@@ -81,24 +81,24 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
 }
 
 void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_title, int no_mega, int no_gmax, int no_regional, int info, int gen_min, int gen_max, int *gen_list, int gen_count) {
-    int index;
-    const char *form;
-    int valid_pokemon_found = 0;
-    int max_attempts = 1000; // To prevent infinite loops
-    int attempts = 0;
+    Pokemon **filtered_pokemon = malloc(count * sizeof(Pokemon *));
+    if (!filtered_pokemon) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return;
+    }
 
-    while (!valid_pokemon_found && attempts < max_attempts) {
-        index = rand() % count;
-        Pokemon *p = &pokemon_list[index];
-        form = p->form_count > 0 && p->forms[0] ? p->forms[0] : "regular";
+    int filtered_count = 0;
+    for (int i = 0; i < count; i++) {
+        Pokemon *p = &pokemon_list[i];
+        const char *form = p->form_count > 0 && p->forms[0] ? p->forms[0] : "regular";
         int pokemon_gen = p->gen;
 
         int in_gen_list = 0;
 
         // Check if the Pokémon's generation is in the specified gen_list
         if (gen_count > 0) {
-            for (int i = 0; i < gen_count; i++) {
-                if (pokemon_gen == gen_list[i]) {
+            for (int j = 0; j < gen_count; j++) {
+                if (pokemon_gen == gen_list[j]) {
                     in_gen_list = 1;
                     break;
                 }
@@ -113,18 +113,20 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
             !(no_mega && (strstr(form, "mega") != NULL || strstr(form, "mega-X") != NULL || strstr(form, "mega-Y") != NULL)) &&
             !(no_gmax && strstr(form, "gmax") != NULL) &&
             !(no_regional && (strstr(form, "alola") != NULL || strstr(form, "galar") != NULL || strstr(form, "hisui") != NULL || strstr(form, "paldea") != NULL))) {
-            valid_pokemon_found = 1;
+            filtered_pokemon[filtered_count++] = p;
         }
-
-        attempts++;
     }
 
-    if (!valid_pokemon_found) {
+    if (filtered_count == 0) {
         fprintf(stderr, "No Pokémon found matching the specified criteria.\n");
+        free(filtered_pokemon);
         return;
     }
 
-    const char *name = pokemon_list[index].slug;
+    int index = rand() % filtered_count;
+    Pokemon *selected_pokemon = filtered_pokemon[index];
+    const char *form = selected_pokemon->form_count > 0 && selected_pokemon->forms[0] ? selected_pokemon->forms[0] : "regular";
+    const char *name = selected_pokemon->slug;
 
     if (!no_title) {
         printf("%s (%s)\n", name, form);
@@ -132,7 +134,9 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
 
     display_pokemon(pokemon_list, count, name, form, shiny, info);
 
-    if (info && pokemon_list[index].desc) {
-        printf("\n%s\n", pokemon_list[index].desc);
+    if (info && selected_pokemon->desc) {
+        printf("\n%s\n", selected_pokemon->desc);
     }
+
+    free(filtered_pokemon);
 }
