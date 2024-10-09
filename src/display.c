@@ -46,7 +46,7 @@ void list_all_pokemon(Pokemon *pokemon_list, int count) {
     }
 }
 
-void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny) {
+void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const char *form, int shiny, int info) {
     for (int i = 0; i < count; i++) {
         if (pokemon_list[i].slug && strcmp(pokemon_list[i].slug, name) == 0) {
             char *art_path = get_colorscripts_path(pokemon_list[i].slug, form, shiny);
@@ -68,6 +68,12 @@ void display_pokemon(Pokemon *pokemon_list, int count, const char *name, const c
             }
 
             fclose(art_file);
+
+            // Print description if info flag is set
+            if (info && pokemon_list[i].desc) {
+                printf("\n%s\n", pokemon_list[i].desc);
+            }
+
             return;
         }
     }
@@ -124,7 +130,7 @@ void display_random_pokemon(Pokemon *pokemon_list, int count, int shiny, int no_
         printf("%s (%s)\n", name, form);
     }
 
-    display_pokemon(pokemon_list, count, name, form, shiny);
+    display_pokemon(pokemon_list, count, name, form, shiny, info);
 
     if (info && pokemon_list[index].desc) {
         printf("\n%s\n", pokemon_list[index].desc);

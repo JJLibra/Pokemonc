@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
         int shiny = shiny_random_value < config->shiny_probability;
         display_random_pokemon(pokemon_list, pokemon_count, shiny, arguments.no_title, arguments.no_mega, arguments.no_gmax, arguments.no_regional, arguments.info, arguments.gen_min, arguments.gen_max, arguments.gen_list, arguments.gen_count);
     } else if (arguments.pokemon_name) {
-        display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny);
+        display_pokemon(pokemon_list, pokemon_count, arguments.pokemon_name, arguments.form, arguments.shiny, arguments.info);
     } else {
         fprintf(stderr, "No command specified. Use --help to see more information.\n");
     }
